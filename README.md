@@ -6,6 +6,7 @@ Requested tool for helping keep track of misc. information, household TODOs, app
 ### Tech stack
 Compose, coroutines, Supabase for remote db, PowerSync for local db & syncing from/to remote db. Also using various personal libraries for QoL - shared theme & componenets across other apps, misc. utilities, etc..
 
+
 ### TODO
 Types of things to help manage
 - [ ] Users
@@ -28,10 +29,12 @@ Types of things to help manage
 - [ ] Tags
   - Label
   - optional User Id
+
 Backend
 - [ ] Setup backend in SB/PS
 - [ ] Setup client schema for SB/PS
 - [ ] Setup auth for users
+
 Client
 - [ ] Add Auth of some sort
   - idk if google auth would be a pain or helpful, or jsut slam in a name w/o password
