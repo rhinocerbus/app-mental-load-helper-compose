@@ -1,18 +1,38 @@
-# app-composite-build-template
+# Mental Load Helper app
 
-## Steps for fully converting from template
-### package changes
-find/replace/refactor "movies_sample_compose" or "movies-sample-compose"
+## Description
+Requested tool for helping keep track of misc. information, household TODOs, appointments, etc..
 
-## adding private libraries
-find files with tag:
-// composite build config
-or values in gradle files with "template-fill"
-ex: applicationId = "com.whatever.template-fill"
+### Tech stack
+Compose, coroutines, Supabase for remote db, PowerSync for local db & syncing from/to remote db. Also using various personal libraries for QoL - shared theme & componenets across other apps, misc. utilities, etc..
 
-### add as git submodule (ex: through sourcetree)
-todo - steps, commands
-### add to gradle
-todo - steps, files, etc.
-settings.gradle.kts
-includeBuild("lib-retrofit-moshi")
+### TODO
+- Data
+- [ ] Setup backend in SB/PS
+- [ ] Setup client schema for SB/PS
+- [ ] Add repos, etc.
+- [ ] Setup auth for users
+- Types of things to help manage
+- [ ] Users
+- [ ] Information
+  - date created
+  - text blob
+  - tags
+- [ ] One-off tasks
+  - date created
+  - due date
+  - assigned person
+  - tags
+- [ ] Repeated tasks
+  - date created
+  - frequency
+  - last completed
+  - due date (some function of last completed and frequency, ex: sweep floors once a week, done sometime, dont need to do again for another week since last done)
+  - "overdue" status based on ^
+  - tags
+- [ ] Tags
+  - Label
+  - optional User Id
+- UI
+- [ ] Main screen: tabs for above
+- [ ] Sorted by recency (vreated by default, options for completed or due-soon or overdue status for tasks)
