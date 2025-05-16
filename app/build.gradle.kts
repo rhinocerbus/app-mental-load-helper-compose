@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-	namespace = "com.piledrive.template"
+	namespace = "com.piledrive.brainhelper"
 	compileSdk = 35
 
 	defaultConfig {
-		applicationId = "com.piledrive.template"
+		applicationId = "com.piledrive.brainhelper"
 		minSdk = 27
 		targetSdk = 35
 		versionCode = 1
@@ -59,6 +59,10 @@ dependencies {
 	implementation(libs.androidx.material3)
 	implementation(libs.androidx.navigation.compose)
 	debugImplementation(libs.ui.tooling)
+
+	// internal libraries (no version necessary)
+	implementation(libs.lib.compose.components)
+	implementation(libs.lib.supabase.powersync)
 
 	// DI
 	implementation(libs.hilt)

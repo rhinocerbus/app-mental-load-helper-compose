@@ -21,9 +21,9 @@ dependencyResolutionManagement {
 	}
 }
 
-rootProject.name = "app-template"
+rootProject.name = "app-brainhelper"
 include(":app")
 // composite build config
 // list private library git submodules
-//includeBuild("lib-retrofit-moshi")
-//includeBuild("lib-datastore")
+includeBuild("lib-compose-components")
+includeBuild("lib-supabase-powersync")

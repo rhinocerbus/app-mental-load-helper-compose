@@ -1,7 +1,7 @@
-package com.piledrive.template.viewmodel
+package com.piledrive.brainhelper.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.piledrive.template.repo.SampleRepo
+import com.piledrive.brainhelper.repo.SampleRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

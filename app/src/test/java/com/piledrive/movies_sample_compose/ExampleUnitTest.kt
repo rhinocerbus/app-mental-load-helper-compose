@@ -1,4 +1,4 @@
-package com.piledrive.movies_sample_compose
+package com.piledrive.brainhelper
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

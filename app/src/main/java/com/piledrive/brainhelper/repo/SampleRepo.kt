@@ -1,4 +1,4 @@
-package com.piledrive.template.repo
+package com.piledrive.brainhelper.repo
 
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject

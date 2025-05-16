@@ -1,4 +1,4 @@
-package com.piledrive.template.ui.nav
+package com.piledrive.brainhelper.ui.nav
 
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
@@ -8,8 +8,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.piledrive.template.ui.screens.MainScreen
-import com.piledrive.template.viewmodel.SampleViewModel
+import com.piledrive.brainhelper.ui.screens.MainScreen
+import com.piledrive.brainhelper.viewmodel.SampleViewModel
 
 interface NavRoute {
 	val routeValue: String
