@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.piledrive.brainhelper.ui.screens.MainScreen
+import com.piledrive.brainhelper.ui.screens.SplashScreen
+import com.piledrive.brainhelper.ui.screens.SplashScreenPreview
 import com.piledrive.brainhelper.viewmodel.SampleViewModel
 
 interface NavRoute {
@@ -44,6 +46,16 @@ fun RootNavHost() {
 			override val onOpenShowSettings: (podcast: IPodcastData) -> Unit = {}
 		}
 */
+
+		composable(route = SplashScreen.routeValue) {
+			val viewModel: SampleViewModel = hiltViewModel<SampleViewModel>()
+			LaunchedEffect("load_content_on_launch") {
+				viewModel.reloadContent()
+			}
+			SplashScreen.draw(
+				viewModel,
+			)
+		}
 
 		composable(route = MainScreen.routeValue) {
 			val viewModel: SampleViewModel = hiltViewModel<SampleViewModel>()
