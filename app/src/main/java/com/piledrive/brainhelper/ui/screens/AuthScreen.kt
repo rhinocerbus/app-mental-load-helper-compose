@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -93,9 +94,10 @@ object AuthScreen : NavRoute {
 				)
 			}
 			val focusManager = LocalFocusManager.current
-			ValidatedTextField(
+			OutlinedTextField(
 				modifier = Modifier.fillMaxWidth(0.8f),
-				formState = emailFormState,
+				value = emailFormState.currentValue,
+				isError = emailFormState.hasError,
 				label = { Text(text = "Email") },
 				keyboardOptions = KeyboardOptions(
 					keyboardType = KeyboardType.Email,
@@ -104,9 +106,11 @@ object AuthScreen : NavRoute {
 				),
 				keyboardActions = KeyboardActions {
 					focusManager.moveFocus(FocusDirection.Next)
-				}
+				},
+				onValueChange = {
+					emailFormState.check(it)
+				},
 			)
-
 
 			val passwordFormState = remember {
 				TextFormFieldState(
@@ -114,9 +118,10 @@ object AuthScreen : NavRoute {
 					mainValidator = Validators.Required(errMsg = "Password required"),
 				)
 			}
-			ValidatedTextField(
+			OutlinedTextField(
 				modifier = Modifier.fillMaxWidth(0.8f),
-				formState = passwordFormState,
+				value = passwordFormState.currentValue,
+				isError = passwordFormState.hasError,
 				label = { Text(text = "Password") },
 				keyboardOptions = KeyboardOptions(
 					keyboardType = KeyboardType.Email,
@@ -125,7 +130,10 @@ object AuthScreen : NavRoute {
 				),
 				keyboardActions = KeyboardActions {
 					onLoginAttempt(emailFormState.currentValue, passwordFormState.currentValue)
-				}
+				},
+				onValueChange = {
+					passwordFormState.check(it)
+				},
 			)
 		}
 	}
