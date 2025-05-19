@@ -27,3 +27,4 @@ include(":app")
 // list private library git submodules
 includeBuild("lib-compose-components")
 includeBuild("lib-supabase-powersync")
+includeBuild("lib-datastore")

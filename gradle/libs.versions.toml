@@ -31,6 +31,10 @@ espressoCore = "3.6.1"
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+## internal libraries
+lib-compose-components = { module = "com.piledrive.lib_compose_components:lib" }
+lib-supabase-powersync = { module = "com.piledrive.lib_supabase_powersync:lib" }
+lib-datastore = { module = "com.piledrive.lib_datastore:lib" }
 # misc. gradle
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 # DI
@@ -52,9 +56,6 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "composeLiveData" }
 androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graphics-android", version.ref = "uiGraphicsAndroid" }
-## internal libraries
-lib-compose-components = { module = "com.piledrive.lib_compose_components:lib" }
-lib-supabase-powersync = { module = "com.piledrive.lib_supabase_powersync:lib" }
 # logging
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 # testing

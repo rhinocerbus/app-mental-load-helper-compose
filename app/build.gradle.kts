@@ -61,6 +61,7 @@ dependencies {
 	// internal libraries (no version necessary)
 	implementation(libs.lib.compose.components)
 	implementation(libs.lib.supabase.powersync)
+	implementation(libs.lib.datastore)
 
 	// android/androidx/compose
 	implementation(libs.androidx.core.ktx)
