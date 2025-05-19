@@ -8,17 +8,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.piledrive.brainhelper.ui.screens.AuthScreen
 import com.piledrive.brainhelper.ui.screens.MainScreen
 import com.piledrive.brainhelper.ui.screens.SplashScreen
-import com.piledrive.brainhelper.ui.screens.SplashScreenPreview
 import com.piledrive.brainhelper.viewmodel.SampleViewModel
+import com.piledrive.brainhelper.viewmodel.SplashViewModel
+import kotlinx.coroutines.channels.consumeEach
 
 interface NavRoute {
 	val routeValue: String
 }
 
 enum class TopLevelRoutes(override val routeValue: String) : NavRoute {
-	SPLASH("splash"), HOME("home")
+	SPLASH("splash"), AUTH("auth"), HOME("home")
 }
 
 enum class NavArgKeys(val key: String) { GUID("guid") }
@@ -48,13 +50,28 @@ fun RootNavHost() {
 */
 
 		composable(route = SplashScreen.routeValue) {
-			val viewModel: SampleViewModel = hiltViewModel<SampleViewModel>()
-			LaunchedEffect("load_content_on_launch") {
-				viewModel.reloadContent()
+			val viewModel: SplashViewModel = hiltViewModel<SplashViewModel>()
+			LaunchedEffect("auth status") {
+				viewModel.events.consumeEach {
+					val toRoute = if (it) {
+						MainScreen.routeValue
+					} else {
+						AuthScreen.routeValue
+					}
+					navController.navigate(toRoute)
+				}
 			}
 			SplashScreen.draw(
 				viewModel,
 			)
+		}
+
+		composable(route = AuthScreen.routeValue) {
+			val viewModel: SplashViewModel = hiltViewModel<SplashViewModel>()
+			AuthScreen.draw(
+				viewModel,
+
+				)
 		}
 
 		composable(route = MainScreen.routeValue) {

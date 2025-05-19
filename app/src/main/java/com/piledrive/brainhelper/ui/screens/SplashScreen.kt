@@ -20,7 +20,6 @@ import com.piledrive.brainhelper.R
 import com.piledrive.brainhelper.data.powersync.enums.SplashState
 import com.piledrive.brainhelper.ui.nav.NavRoute
 import com.piledrive.brainhelper.ui.nav.TopLevelRoutes
-import com.piledrive.brainhelper.ui.util.previewMainContentFlow
 import com.piledrive.brainhelper.viewmodel.SplashViewModel
 import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +30,7 @@ object SplashScreen : NavRoute {
 
 	@Composable
 	fun draw(
-		viewModel: SplashViewModel,
+		viewModel: SplashViewModel
 	) {
 		val stateFlow = viewModel.contentState
 		drawContent(
@@ -83,7 +82,7 @@ object SplashScreen : NavRoute {
 @Composable
 fun SplashScreenPreview() {
 	AppTheme {
-		SplashScreen.drawContent(
+		AuthScreen.drawContent(
 			MutableStateFlow(SplashState.LOADING)
 		)
 	}
