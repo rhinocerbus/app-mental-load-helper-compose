@@ -1,5 +1,7 @@
 [versions]
 # Dependencies of the included build-logic
+# misc. gradle
+secretsGradlePlugin = "2.0.1"
 # core android
 agp = "8.7.3"
 kotlin = "2.0.21"
@@ -17,6 +19,8 @@ activityCompose = "1.10.1"
 lifecycleRuntimeKtx = "2.8.7"
 uiGraphicsAndroid = "1.7.8"
 uiTooling = "1.7.8"
+# logging
+timber = "5.0.1"
 # testing
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -27,6 +31,8 @@ espressoCore = "3.6.1"
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+# misc. gradle
+secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 # DI
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
@@ -49,6 +55,8 @@ androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graph
 ## internal libraries
 lib-compose-components = { module = "com.piledrive.lib_compose_components:lib" }
 lib-supabase-powersync = { module = "com.piledrive.lib_supabase_powersync:lib" }
+# logging
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 # testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

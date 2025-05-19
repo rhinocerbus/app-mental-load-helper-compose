@@ -6,11 +6,15 @@ plugins {
 	alias(libs.plugins.google.ksp)
 	// DI
 	alias(libs.plugins.hilt.android)
+
+	id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
 	namespace = "com.piledrive.brainhelper"
 	compileSdk = 35
+
+	buildFeatures.buildConfig = true
 
 	defaultConfig {
 		applicationId = "com.piledrive.brainhelper"
@@ -40,10 +44,23 @@ android {
 	}
 }
 
+secrets {
+	// To add your Maps API key to this project:
+	// 1. If the secrets.properties file does not exist, create it in the same folder as the local.properties file.
+	// 2. Add this line, where YOUR_API_KEY is your API key:
+	//        MAPS_API_KEY=YOUR_API_KEY
+	propertiesFileName = "secrets.properties"
+
+	// A properties file containing default secret values. This file can be
+	// checked in version control.
+	defaultPropertiesFileName = "local.defaults.properties"
+}
+
 dependencies {
 	// composite build config
-	//implementation("com.piledrive.lib_retrofit_moshi:lib") // no version necessary
-	//implementation("com.piledrive.lib_datastore:lib") // no version necessary
+	// internal libraries (no version necessary)
+	implementation(libs.lib.compose.components)
+	implementation(libs.lib.supabase.powersync)
 
 	// android/androidx/compose
 	implementation(libs.androidx.core.ktx)
@@ -60,14 +77,13 @@ dependencies {
 	implementation(libs.androidx.navigation.compose)
 	debugImplementation(libs.ui.tooling)
 
-	// internal libraries (no version necessary)
-	implementation(libs.lib.compose.components)
-	implementation(libs.lib.supabase.powersync)
-
 	// DI
 	implementation(libs.hilt)
 	ksp(libs.hilt.compiler)
 	implementation(libs.hilt.navigation)
+
+	// logging
+	implementation(libs.timber)
 
 	// testing
 	testImplementation(libs.junit)

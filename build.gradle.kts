@@ -10,3 +10,9 @@ plugins {
 	// DI
 	alias(libs.plugins.hilt.android) apply false
 }
+
+buildscript {
+	dependencies {
+		classpath(libs.secrets.gradle.plugin)
+	}
+}
