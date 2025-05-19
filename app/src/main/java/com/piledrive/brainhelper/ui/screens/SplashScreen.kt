@@ -82,7 +82,7 @@ object SplashScreen : NavRoute {
 @Composable
 fun SplashScreenPreview() {
 	AppTheme {
-		AuthScreen.drawContent(
+		SplashScreen.drawContent(
 			MutableStateFlow(SplashState.LOADING)
 		)
 	}

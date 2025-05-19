@@ -40,4 +40,12 @@ open class SessionDataStore @Inject constructor(@ApplicationContext appCtx: Cont
 		return loadStringImpl(PREF_KEY_ACCESS_TOKEN)
 	}
 
+	suspend fun updateRefreshToken(token: String) {
+		saveStringImpl(PREF_KEY_REFRESH_TOKEN, token)
+	}
+
+	suspend fun checkRefreshToken(): String? {
+		return loadStringImpl(PREF_KEY_REFRESH_TOKEN)
+	}
+
 }

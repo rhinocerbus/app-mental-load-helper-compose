@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.piledrive.brainhelper.ui.screens.AuthScreen
 import com.piledrive.brainhelper.ui.screens.MainScreen
 import com.piledrive.brainhelper.ui.screens.SplashScreen
+import com.piledrive.brainhelper.viewmodel.AuthViewModel
 import com.piledrive.brainhelper.viewmodel.SampleViewModel
 import com.piledrive.brainhelper.viewmodel.SplashViewModel
 import kotlinx.coroutines.channels.consumeEach
@@ -35,7 +36,7 @@ fun RootNavHost() {
 	NavHost(
 		modifier = Modifier.safeDrawingPadding(),
 		navController = navController,
-		startDestination = MainScreen.routeValue
+		startDestination = SplashScreen.routeValue
 	) {
 		/*
 		val podcastCallbacks = object : PodcastCallbacks {
@@ -51,7 +52,7 @@ fun RootNavHost() {
 
 		composable(route = SplashScreen.routeValue) {
 			val viewModel: SplashViewModel = hiltViewModel<SplashViewModel>()
-			LaunchedEffect("auth status") {
+			LaunchedEffect("cached auth status") {
 				viewModel.events.consumeEach {
 					val toRoute = if (it) {
 						MainScreen.routeValue
@@ -67,7 +68,17 @@ fun RootNavHost() {
 		}
 
 		composable(route = AuthScreen.routeValue) {
-			val viewModel: SplashViewModel = hiltViewModel<SplashViewModel>()
+			val viewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
+			LaunchedEffect("auth status") {
+				viewModel.events.consumeEach {
+					if (it) {
+						val toRoute = MainScreen.routeValue
+						navController.navigate(toRoute)
+					} else {
+						//?
+					}
+				}
+			}
 			AuthScreen.draw(
 				viewModel,
 
