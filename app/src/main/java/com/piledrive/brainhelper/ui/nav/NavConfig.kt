@@ -70,7 +70,7 @@ fun RootNavHost() {
 		composable(route = AuthScreen.routeValue) {
 			val viewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
 			LaunchedEffect("auth status") {
-				viewModel.events.consumeEach {
+				viewModel.coordinator.events.consumeEach {
 					if (it) {
 						val toRoute = MainScreen.routeValue
 						navController.navigate(toRoute)
