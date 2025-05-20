@@ -9,14 +9,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.piledrive.brainhelper.ui.screens.MainScreen
+import com.piledrive.brainhelper.ui.screens.SplashScreen
+import com.piledrive.brainhelper.ui.screens.auth.AuthScreen
+import com.piledrive.brainhelper.viewmodel.AuthViewModel
 import com.piledrive.brainhelper.viewmodel.SampleViewModel
+import com.piledrive.brainhelper.viewmodel.SplashViewModel
+import kotlinx.coroutines.channels.consumeEach
 
 interface NavRoute {
 	val routeValue: String
 }
 
 enum class TopLevelRoutes(override val routeValue: String) : NavRoute {
-	SPLASH("splash"), HOME("home")
+	SPLASH("splash"), AUTH("auth"), HOME("home")
 }
 
 enum class NavArgKeys(val key: String) { GUID("guid") }
@@ -31,7 +36,7 @@ fun RootNavHost() {
 	NavHost(
 		modifier = Modifier.safeDrawingPadding(),
 		navController = navController,
-		startDestination = MainScreen.routeValue
+		startDestination = SplashScreen.routeValue
 	) {
 		/*
 		val podcastCallbacks = object : PodcastCallbacks {
@@ -44,6 +49,40 @@ fun RootNavHost() {
 			override val onOpenShowSettings: (podcast: IPodcastData) -> Unit = {}
 		}
 */
+
+		composable(route = SplashScreen.routeValue) {
+			val viewModel: SplashViewModel = hiltViewModel<SplashViewModel>()
+			LaunchedEffect("cached auth status") {
+				viewModel.events.consumeEach {
+					val toRoute = if (it) {
+						MainScreen.routeValue
+					} else {
+						AuthScreen.routeValue
+					}
+					navController.navigate(toRoute)
+				}
+			}
+			SplashScreen.draw(
+				viewModel,
+			)
+		}
+
+		composable(route = AuthScreen.routeValue) {
+			val viewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
+			LaunchedEffect("auth status") {
+				viewModel.coordinator.events.consumeEach {
+					if (it) {
+						val toRoute = MainScreen.routeValue
+						navController.navigate(toRoute)
+					} else {
+						//?
+					}
+				}
+			}
+			AuthScreen.draw(
+				viewModel.coordinator
+			)
+		}
 
 		composable(route = MainScreen.routeValue) {
 			val viewModel: SampleViewModel = hiltViewModel<SampleViewModel>()
