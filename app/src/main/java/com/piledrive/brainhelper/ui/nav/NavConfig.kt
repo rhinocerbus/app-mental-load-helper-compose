@@ -8,9 +8,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.piledrive.brainhelper.ui.screens.AuthScreen
 import com.piledrive.brainhelper.ui.screens.MainScreen
 import com.piledrive.brainhelper.ui.screens.SplashScreen
+import com.piledrive.brainhelper.ui.screens.auth.AuthScreen
 import com.piledrive.brainhelper.viewmodel.AuthViewModel
 import com.piledrive.brainhelper.viewmodel.SampleViewModel
 import com.piledrive.brainhelper.viewmodel.SplashViewModel
@@ -80,9 +80,8 @@ fun RootNavHost() {
 				}
 			}
 			AuthScreen.draw(
-				viewModel,
-
-				)
+				viewModel.coordinator
+			)
 		}
 
 		composable(route = MainScreen.routeValue) {

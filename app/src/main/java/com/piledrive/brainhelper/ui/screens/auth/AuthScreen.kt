@@ -1,4 +1,4 @@
-package com.piledrive.brainhelper.ui.screens
+package com.piledrive.brainhelper.ui.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,45 +26,24 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.piledrive.brainhelper.R
-import com.piledrive.brainhelper.data.powersync.enums.SplashState
 import com.piledrive.brainhelper.ui.nav.NavRoute
 import com.piledrive.brainhelper.ui.nav.TopLevelRoutes
-import com.piledrive.brainhelper.viewmodel.AuthViewModel
 import com.piledrive.lib_compose_components.ui.forms.state.TextFormFieldState
 import com.piledrive.lib_compose_components.ui.forms.validators.Validators
 import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 object AuthScreen : NavRoute {
 	override val routeValue: String = TopLevelRoutes.AUTH.routeValue
 
 	@Composable
 	fun draw(
-		viewModel: AuthViewModel,
-	) {
-		val stateFlow = viewModel.contentState
-		val errorStateFlow = viewModel.errorState
-		drawContent(
-			stateFlow,
-			errorStateFlow,
-			onLoginAttempt = { e, p ->
-				viewModel.attemptLogin(e, p)
-			}
-		)
-	}
-
-	@Composable
-	internal fun drawContent(
-		stateFlow: StateFlow<SplashState>,
-		errorStateFlow: StateFlow<String?>,
-		onLoginAttempt: (String, String) -> Unit
+		coordinator: AuthScreenCoordinatorImpl,
 	) {
 		Scaffold(
 			topBar = {
 			},
 			content = { innerPadding ->
-				BodyContent(Modifier.padding(innerPadding), stateFlow, errorStateFlow, onLoginAttempt)
+				BodyContent(Modifier.padding(innerPadding), coordinator)
 			}
 		)
 	}
@@ -72,9 +51,7 @@ object AuthScreen : NavRoute {
 	@Composable
 	private fun BodyContent(
 		modifier: Modifier,
-		stateFlow: StateFlow<SplashState>,
-		errorStateFlow: StateFlow<String?>,
-		onLoginAttempt: (String, String) -> Unit
+		coordinator: AuthScreenCoordinatorImpl
 	) {
 		val focusManager = LocalFocusManager.current
 		val emailFormState = remember {
@@ -91,8 +68,7 @@ object AuthScreen : NavRoute {
 			)
 		}
 
-		val contentState = stateFlow.collectAsState().value
-		val errMsg = errorStateFlow.collectAsState().value
+		val errMsg = coordinator.errorStateFlow.collectAsState().value
 
 		Column(
 			modifier = modifier.fillMaxSize(),
@@ -144,7 +120,7 @@ object AuthScreen : NavRoute {
 					showKeyboardOnFocus = true
 				),
 				keyboardActions = KeyboardActions {
-					onLoginAttempt(emailFormState.currentValue, passwordFormState.currentValue)
+					coordinator.onLoginAttempt(emailFormState.currentValue, passwordFormState.currentValue)
 				},
 				onValueChange = {
 					passwordFormState.check(it)
@@ -158,10 +134,10 @@ object AuthScreen : NavRoute {
 @Composable
 fun AuthScreenPreview() {
 	AppTheme {
-		AuthScreen.drawContent(
-			MutableStateFlow(SplashState.LOADING),
-			MutableStateFlow(null),
-			{ _, _ -> }
+		AuthScreen.draw(
+			AuthScreenCoordinator(
+				onLoginAttempt = { _, _ -> }
+			)
 		)
 	}
 }
