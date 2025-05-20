@@ -2,6 +2,8 @@ package com.piledrive.brainhelper.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.piledrive.brainhelper.data.api.GenericErrorResponse
+import com.piledrive.brainhelper.data.api.SuccessResponse
 import com.piledrive.brainhelper.data.powersync.enums.SplashState
 import com.piledrive.brainhelper.repo.AuthRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,9 +30,11 @@ class AuthViewModel @Inject constructor(
 					is SessionStatus.Authenticated -> {
 						_events.send(true)
 					}
+
 					is SessionStatus.RefreshFailure -> {
 						_events.send(false)
 					}
+
 					is SessionStatus.NotAuthenticated -> {
 						_events.send(false)
 					}
@@ -45,10 +49,22 @@ class AuthViewModel @Inject constructor(
 	private val _contentState = MutableStateFlow<SplashState>(SplashState.LOADING)
 	val contentState: StateFlow<SplashState> = _contentState
 
+	private val _errorState = MutableStateFlow<String?>(null)
+	val errorState: StateFlow<String?> = _errorState
+
 	fun attemptLogin(email: String, password: String) {
 		viewModelScope.launch {
 			withContext(Dispatchers.Default) {
-				repo.login(email, password)
+				val response = repo.register(email, password)
+				when (response) {
+					is SuccessResponse -> {
+						_errorState.value = null
+					}
+
+					is GenericErrorResponse -> {
+						_errorState.value = response.errMsg
+					}
+				}
 			}
 		}
 	}

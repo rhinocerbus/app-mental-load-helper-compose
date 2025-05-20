@@ -32,7 +32,6 @@ import com.piledrive.brainhelper.ui.nav.TopLevelRoutes
 import com.piledrive.brainhelper.viewmodel.AuthViewModel
 import com.piledrive.lib_compose_components.ui.forms.state.TextFormFieldState
 import com.piledrive.lib_compose_components.ui.forms.validators.Validators
-import com.piledrive.lib_compose_components.ui.textfield.ValidatedTextField
 import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,9 +44,10 @@ object AuthScreen : NavRoute {
 		viewModel: AuthViewModel,
 	) {
 		val stateFlow = viewModel.contentState
-
+		val errorStateFlow = viewModel.errorState
 		drawContent(
 			stateFlow,
+			errorStateFlow,
 			onLoginAttempt = { e, p ->
 				viewModel.attemptLogin(e, p)
 			}
@@ -57,13 +57,14 @@ object AuthScreen : NavRoute {
 	@Composable
 	internal fun drawContent(
 		stateFlow: StateFlow<SplashState>,
+		errorStateFlow: StateFlow<String?>,
 		onLoginAttempt: (String, String) -> Unit
 	) {
 		Scaffold(
 			topBar = {
 			},
 			content = { innerPadding ->
-				BodyContent(Modifier.padding(innerPadding), stateFlow, onLoginAttempt)
+				BodyContent(Modifier.padding(innerPadding), stateFlow, errorStateFlow, onLoginAttempt)
 			}
 		)
 	}
@@ -72,9 +73,27 @@ object AuthScreen : NavRoute {
 	private fun BodyContent(
 		modifier: Modifier,
 		stateFlow: StateFlow<SplashState>,
+		errorStateFlow: StateFlow<String?>,
 		onLoginAttempt: (String, String) -> Unit
 	) {
+		val focusManager = LocalFocusManager.current
+		val emailFormState = remember {
+			TextFormFieldState(
+				initialValue = "m.rubright.dev@gmail.com",
+				mainValidator = Validators.IsEmail(errMsg = "Email required"),
+			)
+		}
+
+		val passwordFormState = remember {
+			TextFormFieldState(
+				initialValue = "test-6-chars",
+				mainValidator = Validators.Required(errMsg = "Password required"),
+			)
+		}
+
 		val contentState = stateFlow.collectAsState().value
+		val errMsg = errorStateFlow.collectAsState().value
+
 		Column(
 			modifier = modifier.fillMaxSize(),
 			verticalArrangement = Arrangement.Center,
@@ -86,18 +105,15 @@ object AuthScreen : NavRoute {
 				modifier = Modifier.size(80.dp)
 			)
 
-
-			val emailFormState = remember {
-				TextFormFieldState(
-					initialValue = "m.rubright.dev@gmail.com",
-					mainValidator = Validators.IsEmail(errMsg = "Email required"),
-				)
-			}
-			val focusManager = LocalFocusManager.current
 			OutlinedTextField(
 				modifier = Modifier.fillMaxWidth(0.8f),
 				value = emailFormState.currentValue,
-				isError = emailFormState.hasError,
+				isError = emailFormState.hasError || errMsg != null,
+				supportingText = {
+					(emailFormState.errorMsg)?.apply {
+						Text(this)
+					}
+				},
 				label = { Text(text = "Email") },
 				keyboardOptions = KeyboardOptions(
 					keyboardType = KeyboardType.Email,
@@ -112,16 +128,15 @@ object AuthScreen : NavRoute {
 				},
 			)
 
-			val passwordFormState = remember {
-				TextFormFieldState(
-					initialValue = "test",
-					mainValidator = Validators.Required(errMsg = "Password required"),
-				)
-			}
 			OutlinedTextField(
 				modifier = Modifier.fillMaxWidth(0.8f),
 				value = passwordFormState.currentValue,
-				isError = passwordFormState.hasError,
+				isError = passwordFormState.hasError || errMsg != null,
+				supportingText = {
+					(passwordFormState.errorMsg ?: errMsg)?.apply {
+						Text(this)
+					}
+				},
 				label = { Text(text = "Password") },
 				keyboardOptions = KeyboardOptions(
 					keyboardType = KeyboardType.Email,
@@ -145,6 +160,7 @@ fun AuthScreenPreview() {
 	AppTheme {
 		AuthScreen.drawContent(
 			MutableStateFlow(SplashState.LOADING),
+			MutableStateFlow(null),
 			{ _, _ -> }
 		)
 	}
