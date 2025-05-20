@@ -41,16 +41,21 @@ class AuthViewModel @Inject constructor(
 	}
 
 	private val _coordinator = AuthScreenCoordinator(
-		onLoginAttempt = { email, pw ->
+		onAuthAttempt = { email, pw ->
 			attemptLogin(email, pw)
-		}
+		},
 	)
 	val coordinator: AuthScreenCoordinatorImpl = _coordinator
 
 	fun attemptLogin(email: String, password: String) {
 		viewModelScope.launch {
+			_coordinator._networkBusyStateFlow.value = true
 			withContext(Dispatchers.Default) {
-				val response = repo.register(email, password)
+				val response = if (_coordinator._registerToggleStateFlow.value) {
+					repo.register(email, password)
+				} else {
+					repo.login(email, password)
+				}
 				when (response) {
 					is SuccessResponse -> {
 						_coordinator._errorStateFlow.value = null
@@ -61,6 +66,7 @@ class AuthViewModel @Inject constructor(
 					}
 				}
 			}
+			_coordinator._networkBusyStateFlow.value = false
 		}
 	}
 }

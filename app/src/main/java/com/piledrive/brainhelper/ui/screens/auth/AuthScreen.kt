@@ -1,13 +1,18 @@
 package com.piledrive.brainhelper.ui.screens.auth
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -30,6 +35,7 @@ import com.piledrive.brainhelper.ui.nav.NavRoute
 import com.piledrive.brainhelper.ui.nav.TopLevelRoutes
 import com.piledrive.lib_compose_components.ui.forms.state.TextFormFieldState
 import com.piledrive.lib_compose_components.ui.forms.validators.Validators
+import com.piledrive.lib_compose_components.ui.spacer.Gap
 import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
 
 object AuthScreen : NavRoute {
@@ -69,17 +75,28 @@ object AuthScreen : NavRoute {
 		}
 
 		val errMsg = coordinator.errorStateFlow.collectAsState().value
+		val isBusy = coordinator.networkBusyStateFlow.collectAsState().value
 
 		Column(
 			modifier = modifier.fillMaxSize(),
 			verticalArrangement = Arrangement.Center,
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
-			Icon(
-				ImageVector.vectorResource(R.drawable.baseline_self_improvement_24),
-				contentDescription = "app icon",
-				modifier = Modifier.size(80.dp)
-			)
+			Box() {
+				if (isBusy) {
+					CircularProgressIndicator(
+						modifier = Modifier.size(84.dp),
+						)
+				}
+
+				Icon(
+					ImageVector.vectorResource(R.drawable.baseline_self_improvement_24),
+					contentDescription = "app icon",
+					modifier = Modifier.size(80.dp)
+				)
+			}
+
+			Gap(24)
 
 			OutlinedTextField(
 				modifier = Modifier.fillMaxWidth(0.8f),
@@ -102,7 +119,10 @@ object AuthScreen : NavRoute {
 				onValueChange = {
 					emailFormState.check(it)
 				},
+				enabled = !isBusy
 			)
+
+			Gap(8)
 
 			OutlinedTextField(
 				modifier = Modifier.fillMaxWidth(0.8f),
@@ -120,12 +140,40 @@ object AuthScreen : NavRoute {
 					showKeyboardOnFocus = true
 				),
 				keyboardActions = KeyboardActions {
-					coordinator.onLoginAttempt(emailFormState.currentValue, passwordFormState.currentValue)
+					coordinator.onAuthAttempt(emailFormState.currentValue, passwordFormState.currentValue)
 				},
 				onValueChange = {
 					passwordFormState.check(it)
 				},
+				enabled = !isBusy
 			)
+
+			Gap(4)
+
+			val isSignUpMode = coordinator.registerToggleStateFlow.collectAsState().value
+			Row(verticalAlignment = Alignment.CenterVertically) {
+				Checkbox(
+					checked = isSignUpMode,
+					onCheckedChange = { coordinator.onToggleRegisterMode() },
+					enabled = !isBusy
+				)
+				Text("New user?")
+			}
+
+			Gap(8)
+
+			Button(
+				onClick = {
+					coordinator.onAuthAttempt(emailFormState.currentValue, passwordFormState.currentValue)
+				},
+				enabled = !isBusy
+			) {
+				if (isSignUpMode) {
+					Text("Sign up")
+				} else {
+					Text("Log in")
+				}
+			}
 		}
 	}
 }
@@ -136,7 +184,6 @@ fun AuthScreenPreview() {
 	AppTheme {
 		AuthScreen.draw(
 			AuthScreenCoordinator(
-				onLoginAttempt = { _, _ -> }
 			)
 		)
 	}
