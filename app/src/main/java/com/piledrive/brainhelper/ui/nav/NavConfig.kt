@@ -12,7 +12,7 @@ import com.piledrive.brainhelper.ui.screens.MainScreen
 import com.piledrive.brainhelper.ui.screens.SplashScreen
 import com.piledrive.brainhelper.ui.screens.auth.AuthScreen
 import com.piledrive.brainhelper.viewmodel.AuthViewModel
-import com.piledrive.brainhelper.viewmodel.SampleViewModel
+import com.piledrive.brainhelper.viewmodel.HomeViewModel
 import com.piledrive.brainhelper.viewmodel.SplashViewModel
 import kotlinx.coroutines.channels.consumeEach
 
@@ -85,7 +85,7 @@ fun RootNavHost() {
 		}
 
 		composable(route = MainScreen.routeValue) {
-			val viewModel: SampleViewModel = hiltViewModel<SampleViewModel>()
+			val viewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
 			LaunchedEffect("load_content_on_launch") {
 				viewModel.reloadContent()
 			}

@@ -7,64 +7,43 @@ import com.powersync.db.schema.Table
 val AppSchema: Schema = Schema(
 	listOf(
 		Table(
-			name = "item_tags",
-			columns = listOf(
-				// added by powersync
-				//Column.text("id"),
-				Column.text("created_at"),
-				Column.text("item_id"),
-				Column.text("tag_id"),
-			)
-		),
-		Table(
-			name = "items",
+			name = "families",
 			columns = listOf(
 				// added by powersync
 				//Column.text("id"),
 				Column.text("created_at"),
 				Column.text("name"),
-				Column.text("unit_id"),
 			)
 		),
 		Table(
-			name = "locations",
+			name = "profiles",
+			columns = listOf(
+				// added by powersync
+				//Column.text("id"),
+				//Column.text("created_at"),
+				Column.text("first_name"),
+				Column.text("last_name"),
+				Column.text("color"),
+			)
+		),
+		Table(
+			name = "profile_to_family",
+			columns = listOf(
+				// added by powersync
+				//Column.text("id"),
+				Column.text("profile_id"),
+				Column.text("family_id")
+			)
+		),
+		Table(
+			name = "notes",
 			columns = listOf(
 				// added by powersync
 				//Column.text("id"),
 				Column.text("created_at"),
-				Column.text("name")
-			)
-		),
-		Table(
-			name = "units",
-			columns = listOf(
-				// added by powersync
-				//Column.text("id"),
-				Column.text("created_at"),
-				Column.text("name"),
-				Column.text("label"),
-				Column.text("type"),
-			)
-		),
-		Table(
-			name = "stashes",
-			columns = listOf(
-				// added by powersync
-				//Column.text("id"),
-				Column.text("created_at"),
-				Column.text("item_id"),
-				Column.text("location_id"),
-				Column.real("amount"),
-			)
-		),
-		Table(
-			name = "tags",
-			columns = listOf(
-				// added by powersync
-				//Column.text("id"),
-				Column.text("created_at"),
-				Column.text("name"),
-				Column.integer("show_empty")
+				Column.text("updated_at"),
+				Column.text("content"),
+				Column.text("family_id")
 			)
 		),
 	)

@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.piledrive.brainhelper.ui.nav.NavRoute
 import com.piledrive.brainhelper.ui.util.previewMainContentFlow
-import com.piledrive.brainhelper.viewmodel.SampleViewModel
+import com.piledrive.brainhelper.viewmodel.HomeViewModel
 import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
 import kotlinx.coroutines.flow.StateFlow
 
@@ -18,7 +18,7 @@ object MainScreen : NavRoute {
 
 	@Composable
 	fun draw(
-		viewModel: SampleViewModel,
+		viewModel: HomeViewModel,
 	) {
 		drawContent(
 			viewModel.contentState,

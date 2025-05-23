@@ -62,7 +62,7 @@ object AuthScreen : NavRoute {
 		val focusManager = LocalFocusManager.current
 		val emailFormState = remember {
 			TextFormFieldState(
-				initialValue = "m.rubright.dev@gmail.com",
+				initialValue = "charlesclarkerubright@gmail.com",
 				mainValidator = Validators.IsEmail(errMsg = "Email required"),
 			)
 		}
@@ -184,6 +184,7 @@ fun AuthScreenPreview() {
 	AppTheme {
 		AuthScreen.draw(
 			AuthScreenCoordinator(
+				initialIsBusy = true
 			)
 		)
 	}
