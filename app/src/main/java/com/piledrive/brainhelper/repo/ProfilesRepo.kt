@@ -18,4 +18,8 @@ class ProfilesRepo @Inject constructor(
 	fun watchProfiles(): Flow<List<Profile>> {
 		return profilesSource.watchProfiles()
 	}
+
+	fun watchSelfProfile(): Flow<Profile?> {
+		return profilesSource.watchSelfProfile()
+	}
 }

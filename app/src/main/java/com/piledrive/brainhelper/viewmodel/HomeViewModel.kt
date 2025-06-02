@@ -8,9 +8,6 @@ import com.piledrive.brainhelper.ui.screens.main.MainScreenCoordinator
 import com.piledrive.brainhelper.viewmodel.collectors.FamiliesCollector
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -53,30 +50,23 @@ class HomeViewModel @Inject constructor(
 
 	private val familiesDataCollector = FamiliesCollector(
 		viewModelScope,
+		profilesRepo.watchSelfProfile(),
 		familiesRepo.watchFamilies(),
 		profilesRepo.watchProfiles()
 	)
 
 	private fun initWatches() {
 		viewModelScope.launch(Dispatchers.Default) {
-			familiesDataCollector.fullFamiliesContentFlow.map {
-				Timber.d("FULL FAMILY STATE UPDATE")
-			}
-			val profilesSource = profilesRepo.watchProfiles()
-			profilesSource.collect {
-				Timber.d("PROFILES || $it")
-			}
-		}
-		viewModelScope.launch(Dispatchers.Default) {
-			val familiesSource = familiesRepo.watchFamilies()
-			familiesSource.collect {
-				Timber.d("FAMILIES || $it")
+			profilesRepo.watchSelfProfile().collect {
+
 			}
 		}
 	}
 
 	val mainScreenCoordinator = MainScreenCoordinator(
-		familiesSourceFlow = familiesDataCollector.fullFamiliesContentFlow
+		selfProfileSourceFlow = familiesDataCollector.selfContentFlow,
+		familiesSourceFlow = familiesDataCollector.familiesContentFlow,
+		familyMembersSourceFlow = familiesDataCollector.profilesContentFlow,
 	)
 
 	suspend fun reloadContent() {

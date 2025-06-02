@@ -16,16 +16,18 @@ import timber.log.Timber
 
 class FamiliesCollector(
 	coroutineScope: CoroutineScope,
+	selfProfileSourceFlow: Flow<Profile?>,
 	familiesSourceFlow: Flow<List<Family>>,
 	profilesSourceFlow: Flow<List<Profile>>
 ) {
 
 	init {
 		coroutineScope.launch(Dispatchers.Default) {
+			val selfSource = watchSelf(selfProfileSourceFlow)
 			val familiesSource = watchFamilies(familiesSourceFlow)
 			val profilesSource = watchProfiles(profilesSourceFlow)
 
-			merge(familiesSource, profilesSource)
+			merge(selfSource, familiesSource, profilesSource)
 				.debounce(500)
 				.collect {
 					recompileData()
@@ -35,6 +37,23 @@ class FamiliesCollector(
 
 	//  region Raw data model inputs
 	/////////////////////////////////////////////////
+
+	private var selfContent: Profile? = null
+	private val _selfContentFlow = MutableStateFlow(selfContent)
+	val selfContentFlow: StateFlow<Profile?> = _selfContentFlow
+
+	private fun watchSelf(source: Flow<Profile?>): Flow<Unit> {
+		return source.mapLatest {
+			Timber.d("Self profile received: $it")
+			/*itemsContent = itemsContent.copy(
+				data = itemsContent.data.copy(items = it)
+			)*/
+			selfContent = it
+			withContext(Dispatchers.Main) {
+				_selfContentFlow.value = selfContent
+			}
+		}
+	}
 
 	private var familiesContent: List<Family> = listOf()
 	private val _familiesContentFlow = MutableStateFlow(familiesContent)
@@ -48,7 +67,6 @@ class FamiliesCollector(
 			)*/
 			familiesContent = it
 			withContext(Dispatchers.Main) {
-
 				_familiesContentFlow.value = familiesContent
 			}
 		}
@@ -78,23 +96,10 @@ class FamiliesCollector(
 	//  region Composite data outputs
 	/////////////////////////////////////////////////
 
-	data class FullFamiliesContentState(
-		val data: List<Family> = listOf()
-	) 
-	
-	private var fullFamiliesContent: FullFamiliesContentState = FullFamiliesContentState()
-	private val _fullFamiliesContentFlow = MutableStateFlow<FullFamiliesContentState>(fullFamiliesContent)
-	val fullFamiliesContentFlow: StateFlow<FullFamiliesContentState> = _fullFamiliesContentFlow
-
 	// todo - resolve this with powersync queries, relations
 	// todo - add optional state for current tag to filter by to keep optimization in mainviewmodel
 	private suspend fun recompileData() {
-		val updated = fullFamiliesContent.copy(
-			data = familiesContent
-		)
-		withContext(Dispatchers.Main) {
-			_fullFamiliesContentFlow.value = updated
-		}
+
 	}
 
 	/////////////////////////////////////////////////

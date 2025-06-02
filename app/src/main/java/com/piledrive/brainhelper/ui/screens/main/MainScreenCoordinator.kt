@@ -1,21 +1,27 @@
 package com.piledrive.brainhelper.ui.screens.main
 
-import com.piledrive.brainhelper.viewmodel.collectors.FamiliesCollector
-import com.piledrive.lib_compose_components.ui.dropdown.readonly.ReadOnlyDropdownCoordinatorGeneric
+import com.piledrive.brainhelper.data.model.Family
+import com.piledrive.brainhelper.data.model.Profile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 
 interface MainScreenCoordinatorImpl {
-	val familiesSourceFlow: StateFlow<FamiliesCollector.FullFamiliesContentState>
+	val selfProfileSourceFlow: StateFlow<Profile?>
+	val familiesSourceFlow: StateFlow<List<Family>>
+	val familyMembersSourceFlow: StateFlow<List<Profile>>
 }
 
 class MainScreenCoordinator(
-	override val familiesSourceFlow: StateFlow<FamiliesCollector.FullFamiliesContentState>
-): MainScreenCoordinatorImpl {
+	override val selfProfileSourceFlow: StateFlow<Profile?>,
+	override val familiesSourceFlow: StateFlow<List<Family>>,
+	override val familyMembersSourceFlow: StateFlow<List<Profile>>
+) : MainScreenCoordinatorImpl {
 
 }
 
 val stubMainScreenCoordinator = MainScreenCoordinator(
-	familiesSourceFlow = MutableStateFlow(FamiliesCollector.FullFamiliesContentState()),
+	selfProfileSourceFlow = MutableStateFlow(null),
+	familiesSourceFlow = MutableStateFlow(listOf()),
+	familyMembersSourceFlow = MutableStateFlow(listOf())
 )

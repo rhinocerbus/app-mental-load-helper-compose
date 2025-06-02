@@ -11,4 +11,6 @@ data class Profile(
 	@Json(name = "last_name")
 	val lastName: String = "",
 	val color: String = "",
-)
+) {
+	val fullName = "$firstName $lastName"
+}

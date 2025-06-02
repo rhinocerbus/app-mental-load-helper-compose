@@ -18,6 +18,7 @@ open class SessionDataStore @Inject constructor(@ApplicationContext appCtx: Cont
 	companion object {
 		private const val PREF_KEY_ACCESS_TOKEN = "PREF_KEY_ACCESS_TOKEN"
 		private const val PREF_KEY_REFRESH_TOKEN = "PREF_KEY_REFRESH_TOKEN"
+		private const val PREF_KEY_USER_ID = "PREF_KEY_USER_ID"
 	}
 
 	override val VERSION: Int
@@ -46,6 +47,14 @@ open class SessionDataStore @Inject constructor(@ApplicationContext appCtx: Cont
 
 	suspend fun checkRefreshToken(): String? {
 		return loadStringImpl(PREF_KEY_REFRESH_TOKEN)
+	}
+
+	suspend fun updateUserId(id: String) {
+		saveStringImpl(PREF_KEY_USER_ID, id)
+	}
+
+	suspend fun checkUserId(): String? {
+		return loadStringImpl(PREF_KEY_USER_ID)
 	}
 
 }
