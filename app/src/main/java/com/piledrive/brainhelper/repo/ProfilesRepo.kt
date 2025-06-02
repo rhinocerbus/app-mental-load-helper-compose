@@ -15,7 +15,7 @@ class ProfilesRepo @Inject constructor(
 		return profilesSource.initPowerSync()
 	}
 
-	fun watchTags(): Flow<List<Profile>> {
+	fun watchProfiles(): Flow<List<Profile>> {
 		return profilesSource.watchProfiles()
 	}
 }
