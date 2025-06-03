@@ -11,15 +11,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.piledrive.brainhelper.data.model.Family
+import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.data.model.Profile
 import com.piledrive.brainhelper.ui.nav.NavRoute
-import com.piledrive.lib_compose_components.ui.appbar.SearchBarWithSpinner
 import com.piledrive.lib_compose_components.ui.spacer.Gap
 import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
 import kotlinx.coroutines.flow.StateFlow
@@ -60,6 +59,8 @@ object MainScreen : NavRoute {
 			FamilySection(mainCoordinator.familiesSourceFlow)
 			Gap(20)
 			FamilyMembersSection(mainCoordinator.familyMembersSourceFlow)
+			Gap(20)
+			NotesSection(mainCoordinator.notesSourceFlow)
 		}
 	}
 
@@ -107,6 +108,23 @@ object MainScreen : NavRoute {
 				key = { _, fam -> fam.id }
 			) { _, fam ->
 				Text(text = fam.fullName)
+			}
+		}
+	}
+
+	@Composable
+	private fun NotesSection(notesSourceFlow: StateFlow<List<Note>>) {
+		val notes = notesSourceFlow.collectAsState().value
+		Text(text = "Family notes:")
+		LazyColumn(
+			modifier = Modifier.fillMaxWidth(),
+			rememberLazyListState(),
+		) {
+			itemsIndexed(
+				items = notes,
+				key = { _, note -> note.id }
+			) { _, note ->
+				Text(text = note.content)
 			}
 		}
 	}
