@@ -36,8 +36,12 @@ class AuthRepo @Inject constructor(
 				when (status) {
 					is SessionStatus.Initializing -> {}
 					is SessionStatus.Authenticated -> {
+						status.session.user?.id?.also {
+							dataStore.updateUserId(it)
+						}
 						dataStore.updateAccessToken(status.session.accessToken)
 						dataStore.updateRefreshToken(status.session.refreshToken)
+						supabaseClient.auth.refreshSession(status.session.refreshToken)
 					}
 
 					is SessionStatus.RefreshFailure -> {
