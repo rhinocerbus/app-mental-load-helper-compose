@@ -9,26 +9,30 @@ Compose, coroutines, Supabase for remote db, PowerSync for local db & syncing fr
 
 ### TODO
 Types of things to help manage
+- [ ] Notes dump
+  - just a text blob
+  - can select a chunk of text to extract into one of the above
 - [ ] Information
   - date created
   - text blob
   - tags
 - [ ] One-off tasks
   - date created
-  - due date
-  - assigned person
+  - text blob
   - tags
+  - assigned person
+  - due date
 - [ ] Repeated tasks
   - date created
+  - text blob
+  - tags
+  - assigned person
+  - last completed by
   - frequency
   - last completed
   - due date (some function of last completed and frequency, ex: sweep floors once a week, done sometime, dont need to do again for another week since last done)
   - "overdue" status based on ^
-  - tags
-- [ ] Notes dump
-  - just a text blob
-  - can select a chunk of text to extract into one of the above
-- [ ] Users
+- [X] Profiles
   - Name
   - Avatar color
 - [ ] Tags
@@ -38,13 +42,17 @@ Types of things to help manage
   - color
 
 Backend
-- [ ] Setup backend in SB/PS
-- [ ] Setup client schema for SB/PS
+- [X] Setup backend in SB/PS
+- [X] Setup client schema for SB/PS
 - [X] Setup auth for users
+  - Profiles table
+  - Profile generated on signup
+  - RLS in SB
+  - Secure sync rules in PS using custom JWT containing ids for querying content
 
 Client
 - [X] Secrets file 
-- [ ] Add repos, etc.
+- [X] Add repos, etc.
 - [ ] Main screen: tabs for above
 - [ ] Sorted by recency (vreated by default, options for completed or due-soon or overdue status for tasks)
 
