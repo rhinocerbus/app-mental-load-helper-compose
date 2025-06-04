@@ -29,13 +29,13 @@ class SplashViewModel @Inject constructor(
 					is SessionStatus.Authenticated -> {
 						_contentState.value = SplashState.AUTHORIZED
 						delay(1000L)
-						_events.send(true)
+						_authorizedEvent.send(true)
 					}
 					is SessionStatus.RefreshFailure -> {
-						_events.send(false)
+						_authorizedEvent.send(false)
 					}
 					is SessionStatus.NotAuthenticated -> {
-						_events.send(false)
+						_authorizedEvent.send(false)
 					}
 				}
 			}
@@ -43,8 +43,8 @@ class SplashViewModel @Inject constructor(
 	}
 
 
-	private val _events: Channel<Boolean> = Channel()
-	val events: ReceiveChannel<Boolean> = _events
+	private val _authorizedEvent: Channel<Boolean> = Channel()
+	val authorizedEvent: ReceiveChannel<Boolean> = _authorizedEvent
 
 	private val _contentState = MutableStateFlow<SplashState>(SplashState.LOADING)
 	val contentState: StateFlow<SplashState> = _contentState
@@ -54,11 +54,11 @@ class SplashViewModel @Inject constructor(
 			// filler - actually check session validity
 			_contentState.value = SplashState.AUTHORIZED
 			delay(1000L)
-			_events.send(true)
+			_authorizedEvent.send(true)
 		} else {
 			_contentState.value = SplashState.UNAUTHORIZED
 			delay(1000L)
-			_events.send(false)
+			_authorizedEvent.send(false)
 		}
 	}
 }
