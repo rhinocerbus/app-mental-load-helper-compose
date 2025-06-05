@@ -11,6 +11,8 @@ import com.piledrive.brainhelper.ui.screens.main.views.MainBar
 import com.piledrive.brainhelper.ui.screens.main.views.MainBarCoordinator
 import com.piledrive.brainhelper.viewmodel.collectors.FamiliesCollector
 import com.piledrive.brainhelper.viewmodel.collectors.NotesCollector
+import com.piledrive.lib_compose_components.ui.dropdown.readonly.multiselect.ReadOnlyMultiSelectDropdownCoordinatorGeneric
+import com.piledrive.lib_compose_components.ui.dropdown.readonly.multiselect.ReadOnlyMultiSelectDropdownTextFieldGeneric
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.Dispatchers
@@ -100,6 +102,7 @@ class HomeViewModel @Inject constructor(
 	)
 
 	val barCoordinator = MainBarCoordinator(
+		tagsCoordinator = ReadOnlyMultiSelectDropdownCoordinatorGeneric<Any>(),
 		onLogout = {
 			logout()
 		}
