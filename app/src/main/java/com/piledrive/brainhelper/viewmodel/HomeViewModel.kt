@@ -2,10 +2,12 @@ package com.piledrive.brainhelper.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.piledrive.brainhelper.data.model.Tag
 import com.piledrive.brainhelper.repo.AuthRepo
 import com.piledrive.brainhelper.repo.FamiliesRepo
 import com.piledrive.brainhelper.repo.NotesRepo
 import com.piledrive.brainhelper.repo.ProfilesRepo
+import com.piledrive.brainhelper.repo.TagsRepo
 import com.piledrive.brainhelper.ui.screens.main.MainScreenCoordinator
 import com.piledrive.brainhelper.ui.screens.main.views.MainBar
 import com.piledrive.brainhelper.ui.screens.main.views.MainBarCoordinator
@@ -28,7 +30,8 @@ class HomeViewModel @Inject constructor(
 	private val profilesRepo: ProfilesRepo,
 	private val familiesRepo: FamiliesRepo,
 	private val notesRepo: NotesRepo,
-	private val authRepo: AuthRepo
+	private val authRepo: AuthRepo,
+	private val tagsRepo: TagsRepo
 ) : ViewModel() {
 
 	init {
@@ -53,7 +56,7 @@ class HomeViewModel @Inject constructor(
 		viewModelScope.launch {
 			withContext(Dispatchers.Default) {
 				profilesRepo.initialize().collect {
-					Timber.d("locations repo init status: $it")
+					Timber.d("repo init status: $it")
 					when (it) {
 						-1 -> {
 							// init error
@@ -80,6 +83,16 @@ class HomeViewModel @Inject constructor(
 
 			}
 		}
+
+
+		viewModelScope.launch {
+		  withContext(Dispatchers.Default) {
+				tagsRepo.watchTags().collect {
+					Timber.d("Tags received: $it")
+					barCoordinator.tagsCoordinator.updateOptionsPool(it)
+				}
+		  }
+		}
 	}
 
 	private val familiesDataCollector = FamiliesCollector(
@@ -102,7 +115,9 @@ class HomeViewModel @Inject constructor(
 	)
 
 	val barCoordinator = MainBarCoordinator(
-		tagsCoordinator = ReadOnlyMultiSelectDropdownCoordinatorGeneric<Any>(),
+		tagsCoordinator = ReadOnlyMultiSelectDropdownCoordinatorGeneric<Tag>(
+			
+		),
 		onLogout = {
 			logout()
 		}
