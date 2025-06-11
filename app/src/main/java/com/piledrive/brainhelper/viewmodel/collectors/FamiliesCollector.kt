@@ -44,7 +44,6 @@ class FamiliesCollector(
 
 	private fun watchSelf(source: Flow<Profile?>): Flow<Unit> {
 		return source.mapLatest {
-			Timber.d("Self profile received: $it")
 			/*itemsContent = itemsContent.copy(
 				data = itemsContent.data.copy(items = it)
 			)*/
@@ -61,7 +60,6 @@ class FamiliesCollector(
 
 	private fun watchFamilies(source: Flow<List<Family>>): Flow<Unit> {
 		return source.mapLatest {
-			Timber.d("Families received: $it")
 			/*itemsContent = itemsContent.copy(
 				data = itemsContent.data.copy(items = it)
 			)*/
@@ -78,7 +76,6 @@ class FamiliesCollector(
 
 	private fun watchProfiles(source: Flow<List<Profile>>): Flow<Unit> {
 		return source.mapLatest {
-			Timber.d("Profiles received: $it")
 			/*itemsContent = itemsContent.copy(
 				data = itemsContent.data.copy(items = it)
 			)*/

@@ -40,7 +40,6 @@ class NotesCollector(
 
 	private fun watchNotes(source: Flow<List<Note>>): Flow<Unit> {
 		return source.mapLatest {
-			Timber.d("Notes received: $it")
 			/*itemsContent = itemsContent.copy(
 				data = itemsContent.data.copy(items = it)
 			)*/

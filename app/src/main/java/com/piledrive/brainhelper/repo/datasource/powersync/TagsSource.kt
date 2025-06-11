@@ -8,6 +8,8 @@ import com.piledrive.lib_supabase_powersync.powersync.PowerSyncDbWrapper
 import com.powersync.db.getString
 import com.powersync.db.getStringOptional
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,6 +39,9 @@ class TagsSource @Inject constructor(
 					color = cursor.getStringOptional("color"),
 				)
 			}
-		)
+		).map {
+			Timber.d("Profiles received: $it")
+			it
+		}
 	}
 }

@@ -32,7 +32,7 @@ fun MainBar(
 					modifier = Modifier.widthIn(100.dp, 150.dp).wrapContentWidth(),
 					innerTextFieldModifier = Modifier.wrapContentWidth(),
 					coordinator = coordinator.tagsCoordinator,
-					text = "Tags (10)"
+					text = "Tags",
 				)
 			},
 			overflowActions = {
