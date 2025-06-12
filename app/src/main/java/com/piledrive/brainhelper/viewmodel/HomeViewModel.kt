@@ -57,7 +57,7 @@ class HomeViewModel @Inject constructor(
 	private fun initDataSync() {
 		viewModelScope.launch {
 			withContext(Dispatchers.Default) {
-				profilesRepo.initialize().collect {
+				profilesRepo.initStateFlow.collect {
 					Timber.d("repo init status: $it")
 					when (it) {
 						-1 -> {
@@ -99,19 +99,19 @@ class HomeViewModel @Inject constructor(
 	private val familiesDataCollector = FamiliesCollector(
 		viewModelScope,
 		profilesRepo.watchSelfProfile(),
-		familiesRepo.watchFamilies(),
-		profilesRepo.watchProfiles()
+		familiesRepo.watchContent(),
+		profilesRepo.watchContent()
 	)
 
 	private val notesCollector = NotesCollector(
 		viewModelScope,
-		notesRepo.watchNotes()
+		notesRepo.watchContent()
 	)
 
 	private val tagsCollector = TagsCollector(
 		viewModelScope,
-		tagsRepo.watchTags(),
-		profilesRepo.watchProfiles()
+		tagsRepo.watchContent(),
+		profilesRepo.watchContent()
 	)
 
 	val mainScreenCoordinator = MainScreenCoordinator(

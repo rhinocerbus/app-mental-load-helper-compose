@@ -11,8 +11,10 @@ import androidx.navigation.compose.rememberNavController
 import com.piledrive.brainhelper.ui.screens.SplashScreen
 import com.piledrive.brainhelper.ui.screens.auth.AuthScreen
 import com.piledrive.brainhelper.ui.screens.main.MainScreen
+import com.piledrive.brainhelper.ui.screens.scratch.ScratchPadScreen
 import com.piledrive.brainhelper.viewmodel.AuthViewModel
 import com.piledrive.brainhelper.viewmodel.HomeViewModel
+import com.piledrive.brainhelper.viewmodel.ScratchPadViewModel
 import com.piledrive.brainhelper.viewmodel.SplashViewModel
 import kotlinx.coroutines.channels.consumeEach
 
@@ -121,6 +123,11 @@ fun RootNavHost() {
 					}
 				}
 			)
+		}
+
+		composable(TopLevelRoutes.SCRATCH.routeValue) {
+			val viewModel: ScratchPadViewModel = hiltViewModel<ScratchPadViewModel>()
+			ScratchPadScreen.draw(viewModel)
 		}
 		/*
 		composable(route = PodcastScreen.routeValue) { navStackEntry ->

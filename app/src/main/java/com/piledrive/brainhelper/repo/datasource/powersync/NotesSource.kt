@@ -1,11 +1,11 @@
 package com.piledrive.brainhelper.repo.datasource.powersync
 
-import com.piledrive.brainhelper.data.model.Family
 import com.piledrive.brainhelper.data.model.Note
-import com.piledrive.brainhelper.data.model.Profile
+import com.piledrive.lib_supabase_powersync.data.model.abstracts.datasource.abstracts.BasicPowerSyncDataSource
 import com.piledrive.lib_supabase_powersync.powersync.PowerSyncDbWrapper
 import com.powersync.db.getString
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
@@ -14,19 +14,11 @@ import javax.inject.Singleton
 @Singleton
 class NotesSource @Inject constructor(
 	private val powerSync: PowerSyncDbWrapper,
-) {
+) : BasicPowerSyncDataSource<Note> {
 
-	fun initPowerSync(): Flow<Int> {
-		/*return callbackFlow {
-			send(0)
-			powerSync.db.waitForFirstSync()
-			send(1)
-			close()
-		}*/
-		return powerSync.initState
-	}
+	override val initStateFlow: StateFlow<Int> = powerSync.initState
 
-	fun watchNotes(): Flow<List<Note>> {
+	override fun watchContent(): Flow<List<Note>> {
 		return powerSync.db.watch(
 			"SELECT * FROM notes", mapper = { cursor ->
 				Note(
