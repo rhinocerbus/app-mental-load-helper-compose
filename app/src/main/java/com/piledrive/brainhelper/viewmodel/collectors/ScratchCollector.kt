@@ -14,13 +14,15 @@ import kotlinx.coroutines.withContext
 
 class ScratchCollector(
 	coroutineScope: CoroutineScope,
-	scratchSourceFlow: Flow<List<Scratch>>
+	scratchSourceFlow: Flow<List<Scratch>>,
+	activeFamilyIdPrefSourceFlow: Flow<String?>
 ) {
 
 	init {
 		coroutineScope.launch(Dispatchers.Default) {
 			val scratchSource = watchScratch(scratchSourceFlow)
-			merge(scratchSource)
+			val activeFamilySource = watchFamily(activeFamilyIdPrefSourceFlow)
+			merge(scratchSource, activeFamilySource)
 				.debounce(500)
 				.collect {
 					recompileData()
@@ -32,20 +34,20 @@ class ScratchCollector(
 	/////////////////////////////////////////////////
 
 	private var scratchContent: List<Scratch> = listOf()
-	private val _scratchContentFlow = MutableStateFlow(scratchContent)
-	val scratchContentFlow: StateFlow<List<Scratch>> = _scratchContentFlow
 
 	private fun watchScratch(source: Flow<List<Scratch>>): Flow<Unit> {
 		return source.mapLatest {
-			/*itemsContent = itemsContent.copy(
-				data = itemsContent.data.copy(items = it)
-			)*/
 			scratchContent = it
-			withContext(Dispatchers.Main) {
-				_scratchContentFlow.value = scratchContent
-			}
 		}
 	}
+
+	private var activeFamilyId: String? = null
+	private fun watchFamily(source: Flow<String?>): Flow<Unit> {
+		return source.mapLatest {
+			activeFamilyId = it
+		}
+	}
+
 
 	/////////////////////////////////////////////////
 	//  endregion
@@ -54,9 +56,13 @@ class ScratchCollector(
 	//  region Composite data outputs
 	/////////////////////////////////////////////////
 
+	private val _scratchContentFlow: MutableStateFlow<Scratch?> = MutableStateFlow(null)
+	val scratchContentFlow: StateFlow<Scratch?> = _scratchContentFlow
+
 	// todo - resolve this with powersync queries, relations
 	// todo - add optional state for current tag to filter by to keep optimization in mainviewmodel
 	private suspend fun recompileData() {
+		_scratchContentFlow.value = scratchContent.firstOrNull { it.familyId == activeFamilyId }
 	}
 
 	/////////////////////////////////////////////////

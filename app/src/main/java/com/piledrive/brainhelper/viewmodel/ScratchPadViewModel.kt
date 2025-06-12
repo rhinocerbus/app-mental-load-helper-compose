@@ -5,15 +5,19 @@ import androidx.core.graphics.toColorInt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.piledrive.brainhelper.data.model.composite.FullTag
+import com.piledrive.brainhelper.datastore.SessionDataStore
 import com.piledrive.brainhelper.repo.AuthRepo
 import com.piledrive.brainhelper.repo.FamiliesRepo
 import com.piledrive.brainhelper.repo.NotesRepo
 import com.piledrive.brainhelper.repo.ProfilesRepo
+import com.piledrive.brainhelper.repo.ScratchRepo
 import com.piledrive.brainhelper.repo.TagsRepo
 import com.piledrive.brainhelper.ui.screens.main.MainScreenCoordinator
 import com.piledrive.brainhelper.ui.screens.main.views.MainBarCoordinator
+import com.piledrive.brainhelper.ui.screens.scratch.ScratchPadScreenCoordinator
 import com.piledrive.brainhelper.viewmodel.collectors.FamiliesCollector
 import com.piledrive.brainhelper.viewmodel.collectors.NotesCollector
+import com.piledrive.brainhelper.viewmodel.collectors.ScratchCollector
 import com.piledrive.brainhelper.viewmodel.collectors.TagsCollector
 import com.piledrive.lib_compose_components.ui.dropdown.readonly.multiselect.ReadOnlyMultiSelectDropdownCoordinatorGeneric
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,30 +32,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ScratchPadViewModel @Inject constructor(
+	private val dataStore: SessionDataStore,
 	private val profilesRepo: ProfilesRepo,
 	private val familiesRepo: FamiliesRepo,
 	private val notesRepo: NotesRepo,
 	private val authRepo: AuthRepo,
-	private val tagsRepo: TagsRepo
+	private val scratchRepo: ScratchRepo
 ) : ViewModel() {
 
 	init {
-		initAuthWatch()
 		initDataSync()
-	}
-
-	private fun initAuthWatch() {
-		viewModelScope.launch {
-			authRepo.grabAuthStatusFlow().collect { status ->
-				when (status) {
-					is SessionStatus.NotAuthenticated -> {
-						_loggedOutEvent.send(true)
-					}
-
-					else -> {}
-				}
-			}
-		}
 	}
 
 	private fun initDataSync() {
@@ -80,20 +70,6 @@ class ScratchPadViewModel @Inject constructor(
 	}
 
 	private fun initWatches() {
-		viewModelScope.launch(Dispatchers.Default) {
-			profilesRepo.watchSelfProfile().collect {
-
-			}
-		}
-
-
-		viewModelScope.launch {
-			withContext(Dispatchers.Default) {
-				tagsCollector.tagsContentFlow.collect {
-					barCoordinator.tagsCoordinator.updateOptionsPool(it)
-				}
-			}
-		}
 	}
 
 	private val familiesDataCollector = FamiliesCollector(
@@ -108,49 +84,19 @@ class ScratchPadViewModel @Inject constructor(
 		notesRepo.watchContent()
 	)
 
-	private val tagsCollector = TagsCollector(
+
+	private val scratchCollector = ScratchCollector(
 		viewModelScope,
-		tagsRepo.watchContent(),
-		profilesRepo.watchContent()
+		scratchRepo.watchContent(),
+		dataStore.watchActiveFamilyId()
 	)
 
-	val coordinator = MainScreenCoordinator(
-		selfProfileSourceFlow = familiesDataCollector.selfContentFlow,
-		familiesSourceFlow = familiesDataCollector.familiesContentFlow,
-		familyMembersSourceFlow = familiesDataCollector.profilesContentFlow,
-		notesSourceFlow = notesCollector.notesContentFlow,
-	)
-
-	val barCoordinator = MainBarCoordinator(
-		tagsCoordinator = ReadOnlyMultiSelectDropdownCoordinatorGeneric<FullTag>(
-			optionTextMutator = { it.tagText },
-			optionBackgroundColor = { Color(it.tagColor.toColorInt()) /*Color.fromHex(it.tagColor)*/ },
-			optionIdForSelectedCheck = { it.id }
-		),
-		onLogout = {
-			logout()
-		}
+	val coordinator = ScratchPadScreenCoordinator(
+		scratchCollector.scratchContentFlow
 	)
 
 	suspend fun reloadContent() {
 	}
 
 
-	//  region auth
-	/////////////////////////////////////////////////
-
-	private val _loggedOutEvent: Channel<Boolean> = Channel()
-	val loggedOutEvent: ReceiveChannel<Boolean> = _loggedOutEvent
-
-	private fun logout() {
-		viewModelScope.launch {
-			authRepo.logout()
-		}
-	}
-
-	private val _launchScratchPadEvent: Channel<Boolean> = Channel()
-	val launchScratchPadEvent: ReceiveChannel<Boolean> = _launchScratchPadEvent
-
-	/////////////////////////////////////////////////
-	//  endregion
 }

@@ -1,30 +1,21 @@
 package com.piledrive.brainhelper.ui.screens.scratch
 
-import com.piledrive.brainhelper.data.model.Family
-import com.piledrive.brainhelper.data.model.Note
-import com.piledrive.brainhelper.data.model.Profile
+import com.piledrive.brainhelper.data.model.Scratch
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 
-interface MainScreenCoordinatorImpl {
-	val scratchesSourceFlow: StateFlow<List<ScratchPadScreen>>
-	val familyMembersSourceFlow: StateFlow<List<Profile>>
-	val notesSourceFlow: StateFlow<List<Note>>
+interface ScratchPadScreenCoordinatorImpl {
+	val scratchesSourceFlow: StateFlow<Scratch?>
 }
 
-class MainScreenCoordinator(
-	override val selfProfileSourceFlow: StateFlow<Profile?>,
-	override val familiesSourceFlow: StateFlow<List<Family>>,
-	override val familyMembersSourceFlow: StateFlow<List<Profile>>,
-	override val notesSourceFlow: StateFlow<List<Note>>,
-) : MainScreenCoordinatorImpl {
+class ScratchPadScreenCoordinator(
+	override val scratchesSourceFlow: StateFlow<Scratch?>,
+) : ScratchPadScreenCoordinatorImpl {
 
 }
 
-val stubMainScreenCoordinator = MainScreenCoordinator(
-	selfProfileSourceFlow = MutableStateFlow(null),
-	familiesSourceFlow = MutableStateFlow(listOf()),
-	familyMembersSourceFlow = MutableStateFlow(listOf()),
-	notesSourceFlow = MutableStateFlow(listOf()),
+val stubScratchPadScreenCoordinator = ScratchPadScreenCoordinator(
+	scratchesSourceFlow = MutableStateFlow(null),
 )
