@@ -8,9 +8,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.piledrive.brainhelper.ui.screens.main.MainScreen
 import com.piledrive.brainhelper.ui.screens.SplashScreen
 import com.piledrive.brainhelper.ui.screens.auth.AuthScreen
+import com.piledrive.brainhelper.ui.screens.main.MainScreen
 import com.piledrive.brainhelper.viewmodel.AuthViewModel
 import com.piledrive.brainhelper.viewmodel.HomeViewModel
 import com.piledrive.brainhelper.viewmodel.SplashViewModel
@@ -21,7 +21,7 @@ interface NavRoute {
 }
 
 enum class TopLevelRoutes(override val routeValue: String) : NavRoute {
-	SPLASH("splash"), AUTH("auth"), HOME("home")
+	SPLASH("splash"), AUTH("auth"), HOME("home"), SCRATCH("scratch")
 }
 
 enum class NavArgKeys(val key: String) { GUID("guid") }
@@ -59,7 +59,7 @@ fun RootNavHost() {
 					} else {
 						AuthScreen.routeValue
 					}
-					navController.navigate(toRoute){
+					navController.navigate(toRoute) {
 						popUpTo(navController.graph.id) {
 							inclusive = true
 						}
@@ -110,9 +110,16 @@ fun RootNavHost() {
 					}
 				}
 			}
+
 			MainScreen.draw(
 				viewModel.barCoordinator,
 				viewModel.mainScreenCoordinator,
+				object : MainScreen.MainScreenNavCallbacks {
+					override val onLaunchScratchPad: () -> Unit = {
+						navController.navigate("") {
+						}
+					}
+				}
 			)
 		}
 		/*

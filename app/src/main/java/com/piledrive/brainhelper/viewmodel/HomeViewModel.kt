@@ -16,7 +16,6 @@ import com.piledrive.brainhelper.viewmodel.collectors.FamiliesCollector
 import com.piledrive.brainhelper.viewmodel.collectors.NotesCollector
 import com.piledrive.brainhelper.viewmodel.collectors.TagsCollector
 import com.piledrive.lib_compose_components.ui.dropdown.readonly.multiselect.ReadOnlyMultiSelectDropdownCoordinatorGeneric
-import com.piledrive.lib_compose_components.ui.util.fromHex
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.Dispatchers
@@ -119,7 +118,7 @@ class HomeViewModel @Inject constructor(
 		selfProfileSourceFlow = familiesDataCollector.selfContentFlow,
 		familiesSourceFlow = familiesDataCollector.familiesContentFlow,
 		familyMembersSourceFlow = familiesDataCollector.profilesContentFlow,
-		notesSourceFlow = notesCollector.notesContentFlow
+		notesSourceFlow = notesCollector.notesContentFlow,
 	)
 
 	val barCoordinator = MainBarCoordinator(
@@ -148,6 +147,9 @@ class HomeViewModel @Inject constructor(
 			authRepo.logout()
 		}
 	}
+
+	private val _launchScratchPadEvent: Channel<Boolean> = Channel()
+	val launchScratchPadEvent: ReceiveChannel<Boolean> = _launchScratchPadEvent
 
 	/////////////////////////////////////////////////
 	//  endregion

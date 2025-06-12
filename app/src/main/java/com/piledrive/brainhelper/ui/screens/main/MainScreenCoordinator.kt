@@ -18,7 +18,7 @@ class MainScreenCoordinator(
 	override val selfProfileSourceFlow: StateFlow<Profile?>,
 	override val familiesSourceFlow: StateFlow<List<Family>>,
 	override val familyMembersSourceFlow: StateFlow<List<Profile>>,
-	override val notesSourceFlow: StateFlow<List<Note>>
+	override val notesSourceFlow: StateFlow<List<Note>>,
 ) : MainScreenCoordinatorImpl {
 
 }
@@ -27,5 +27,5 @@ val stubMainScreenCoordinator = MainScreenCoordinator(
 	selfProfileSourceFlow = MutableStateFlow(null),
 	familiesSourceFlow = MutableStateFlow(listOf()),
 	familyMembersSourceFlow = MutableStateFlow(listOf()),
-	notesSourceFlow = MutableStateFlow(listOf())
+	notesSourceFlow = MutableStateFlow(listOf()),
 )

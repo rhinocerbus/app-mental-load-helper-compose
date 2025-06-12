@@ -7,18 +7,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.piledrive.brainhelper.R
 import com.piledrive.brainhelper.data.model.Family
 import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.data.model.Profile
 import com.piledrive.brainhelper.ui.nav.NavRoute
+import com.piledrive.brainhelper.ui.nav.TopLevelRoutes
 import com.piledrive.brainhelper.ui.screens.main.views.MainBar
 import com.piledrive.brainhelper.ui.screens.main.views.MainBarCoordinator
 import com.piledrive.brainhelper.ui.screens.main.views.stubMainBarCoordinator
@@ -27,23 +33,17 @@ import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
 import kotlinx.coroutines.flow.StateFlow
 
 object MainScreen : NavRoute {
-	override val routeValue: String = "home"
+	override val routeValue: String = TopLevelRoutes.HOME.routeValue
+
+	interface MainScreenNavCallbacks {
+		val onLaunchScratchPad: () -> Unit
+	}
 
 	@Composable
 	fun draw(
 		barCoordinator: MainBarCoordinator,
 		mainCoordinator: MainScreenCoordinator,
-	) {
-		drawContent(
-			barCoordinator,
-			mainCoordinator,
-		)
-	}
-
-	@Composable
-	fun drawContent(
-		barCoordinator: MainBarCoordinator,
-		mainCoordinator: MainScreenCoordinator,
+		navCallbacks: MainScreenNavCallbacks
 	) {
 		Scaffold(
 			topBar = {
@@ -54,6 +54,13 @@ object MainScreen : NavRoute {
 			},
 			content = { innerPadding ->
 				BodyContent(modifier = Modifier.padding(innerPadding), mainCoordinator)
+			},
+			floatingActionButton = {
+				FloatingActionButton(
+					onClick = { navCallbacks.onLaunchScratchPad() }
+				) {
+					Icon(ImageVector.vectorResource(R.drawable.baseline_edit_note_24), "show scratch pad")
+				}
 			}
 		)
 	}
@@ -142,11 +149,14 @@ object MainScreen : NavRoute {
 
 @Preview
 @Composable
-fun MainPreview() {
+private fun MainPreview() {
 	AppTheme {
-		MainScreen.drawContent(
+		MainScreen.draw(
 			stubMainBarCoordinator,
-			stubMainScreenCoordinator
+			stubMainScreenCoordinator,
+			object : MainScreen.MainScreenNavCallbacks {
+				override val onLaunchScratchPad: () -> Unit = {}
+			}
 		)
 	}
 }
