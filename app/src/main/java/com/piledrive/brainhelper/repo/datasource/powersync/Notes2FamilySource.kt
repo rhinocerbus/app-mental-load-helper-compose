@@ -1,15 +1,11 @@
 package com.piledrive.brainhelper.repo.datasource.powersync
 
 import android.content.ContentValues
-import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.data.model.Note2Family
 import com.piledrive.brainhelper.data.model.Note2FamilySlug
-import com.piledrive.brainhelper.data.model.Scratch
-import com.piledrive.lib_supabase_powersync.data.model.abstracts.datasource.abstracts.BasicPowerSyncDataSource
 import com.piledrive.lib_supabase_powersync.data.model.abstracts.datasource.abstracts.CrudPowerSyncDataSource
 import com.piledrive.lib_supabase_powersync.powersync.PowerSyncDbWrapper
 import com.powersync.db.getString
-import com.powersync.db.getStringOptional
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -47,7 +43,11 @@ class Notes2FamilySource @Inject constructor(
 		powerSync.insert("notes_to_family", values, Note2Family::class)
 	}
 
+	@Deprecated(level = DeprecationLevel.ERROR, message = "Update unsupported for table")
 	override suspend fun updateData(data: Note2Family) {
-		TODO("Not yet implemented")
+	}
+
+	@Deprecated(level = DeprecationLevel.ERROR, message = "Delete unsupported for table")
+	override suspend fun deleteData(data: Note2Family) {
 	}
 }

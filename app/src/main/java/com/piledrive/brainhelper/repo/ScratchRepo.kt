@@ -30,4 +30,8 @@ class ScratchRepo @Inject constructor(
 	override suspend fun updateData(data: Scratch) {
 		return source.updateData(data)
 	}
+
+	@Deprecated(level = DeprecationLevel.ERROR, message = "Delete unsupported for table")
+	override suspend fun deleteData(data: Scratch) {
+	}
 }

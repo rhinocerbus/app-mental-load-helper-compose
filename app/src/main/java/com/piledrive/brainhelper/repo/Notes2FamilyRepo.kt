@@ -27,7 +27,11 @@ class Notes2FamilyRepo @Inject constructor(
 		source.addNewData(slug)
 	}
 
+	@Deprecated(level = DeprecationLevel.ERROR, message = "Update unsupported for table")
 	override suspend fun updateData(data: Note2Family) {
-		source.updateData(data)
+	}
+
+	@Deprecated(level = DeprecationLevel.ERROR, message = "Delete unsupported for table")
+	override suspend fun deleteData(data: Note2Family) {
 	}
 }

@@ -54,5 +54,8 @@ class NotesSource @Inject constructor(
 		}
 		powerSync.update("notes", values, whereValue = data.id, clazz = Note::class)
 	}
+
+	override suspend fun deleteData(data: Note) {
+		powerSync.delete("notes", whereValue = data.id, clazz = Note::class)
 	}
 }

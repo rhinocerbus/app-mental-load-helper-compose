@@ -1,6 +1,7 @@
 package com.piledrive.brainhelper.repo.datasource.powersync
 
 import android.content.ContentValues
+import com.piledrive.brainhelper.data.model.Note2Family
 import com.piledrive.brainhelper.data.model.Scratch
 import com.piledrive.brainhelper.data.model.ScratchSlug
 import com.piledrive.lib_supabase_powersync.data.model.abstracts.datasource.abstracts.CrudPowerSyncDataSource
@@ -50,5 +51,9 @@ class ScratchSource @Inject constructor(
 			put("content", data.content)
 		}
 		powerSync.update("scratch", values, whereValue = data.id, clazz = Scratch::class)
+	}
+
+	@Deprecated(level = DeprecationLevel.ERROR, message = "Delete unsupported for table")
+	override suspend fun deleteData(data: Scratch) {
 	}
 }
