@@ -62,7 +62,7 @@ open class SessionDataStore @Inject constructor(@ApplicationContext appCtx: Cont
 		return loadStringImpl(PREF_KEY_USER_ID)
 	}
 
-	suspend fun updateActiveFamilyId(id: String) {
+	suspend fun updateActiveFamilyId(id: String?) {
 		saveStringImpl(PREF_KEY_ACTIVE_FAMILY_ID, id)
 	}
 

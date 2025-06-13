@@ -106,7 +106,7 @@ class HomeViewModel @Inject constructor(
 			.map { families ->
 				val activeId = dataStore.checkActiveFamilyId()
 				if (families.isNotEmpty() && activeId == null || families.firstOrNull { it.id == activeId } == null) {
-					dataStore.updateActiveFamilyId(families.first().id)
+					dataStore.updateActiveFamilyId(families.firstOrNull()?.id)
 				}
 				families
 			},
