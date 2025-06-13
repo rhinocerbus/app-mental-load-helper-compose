@@ -23,6 +23,7 @@ import com.piledrive.brainhelper.R
 import com.piledrive.brainhelper.data.model.Family
 import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.data.model.Profile
+import com.piledrive.brainhelper.data.state.FamilyContentState
 import com.piledrive.brainhelper.ui.nav.NavRoute
 import com.piledrive.brainhelper.ui.nav.TopLevelRoutes
 import com.piledrive.brainhelper.ui.screens.main.views.MainBar
@@ -96,8 +97,8 @@ object MainScreen : NavRoute {
 	}
 
 	@Composable
-	private fun FamilySection(familiesSourceFlow: StateFlow<List<Family>>) {
-		val families = familiesSourceFlow.collectAsState().value
+	private fun FamilySection(familiesSourceFlow: StateFlow<FamilyContentState>) {
+		val families = familiesSourceFlow.collectAsState().value.families
 		Text(text = "Families:")
 		LazyColumn(
 			modifier = Modifier.fillMaxWidth(),

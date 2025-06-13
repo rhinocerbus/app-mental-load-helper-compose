@@ -78,19 +78,6 @@ class ScratchPadViewModel @Inject constructor(
 		}
 	}
 
-	private val familiesDataCollector = FamiliesCollector(
-		viewModelScope,
-		profilesRepo.watchSelfProfile(),
-		familiesRepo.watchContent(),
-		profilesRepo.watchContent()
-	)
-
-	private val notesCollector = NotesCollector(
-		viewModelScope,
-		notesRepo.watchContent()
-	)
-
-
 	private val scratchCollector = ScratchCollector(
 		viewModelScope,
 		scratchRepo.watchContent(),
