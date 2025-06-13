@@ -1,16 +1,22 @@
 package com.piledrive.brainhelper.viewmodel
 
+import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.piledrive.brainhelper.data.model.composite.FullTag
 import com.piledrive.brainhelper.repo.AuthRepo
 import com.piledrive.brainhelper.repo.FamiliesRepo
 import com.piledrive.brainhelper.repo.NotesRepo
 import com.piledrive.brainhelper.repo.ProfilesRepo
+import com.piledrive.brainhelper.repo.TagsRepo
 import com.piledrive.brainhelper.ui.screens.main.MainScreenCoordinator
-import com.piledrive.brainhelper.ui.screens.main.views.MainBar
 import com.piledrive.brainhelper.ui.screens.main.views.MainBarCoordinator
 import com.piledrive.brainhelper.viewmodel.collectors.FamiliesCollector
 import com.piledrive.brainhelper.viewmodel.collectors.NotesCollector
+import com.piledrive.brainhelper.viewmodel.collectors.TagsCollector
+import com.piledrive.lib_compose_components.ui.dropdown.readonly.multiselect.ReadOnlyMultiSelectDropdownCoordinatorGeneric
+import com.piledrive.lib_compose_components.ui.util.fromHex
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +32,8 @@ class HomeViewModel @Inject constructor(
 	private val profilesRepo: ProfilesRepo,
 	private val familiesRepo: FamiliesRepo,
 	private val notesRepo: NotesRepo,
-	private val authRepo: AuthRepo
+	private val authRepo: AuthRepo,
+	private val tagsRepo: TagsRepo
 ) : ViewModel() {
 
 	init {
@@ -41,6 +48,7 @@ class HomeViewModel @Inject constructor(
 					is SessionStatus.NotAuthenticated -> {
 						_loggedOutEvent.send(true)
 					}
+
 					else -> {}
 				}
 			}
@@ -51,7 +59,7 @@ class HomeViewModel @Inject constructor(
 		viewModelScope.launch {
 			withContext(Dispatchers.Default) {
 				profilesRepo.initialize().collect {
-					Timber.d("locations repo init status: $it")
+					Timber.d("repo init status: $it")
 					when (it) {
 						-1 -> {
 							// init error
@@ -78,6 +86,15 @@ class HomeViewModel @Inject constructor(
 
 			}
 		}
+
+
+		viewModelScope.launch {
+			withContext(Dispatchers.Default) {
+				tagsCollector.tagsContentFlow.collect {
+					barCoordinator.tagsCoordinator.updateOptionsPool(it)
+				}
+			}
+		}
 	}
 
 	private val familiesDataCollector = FamiliesCollector(
@@ -92,6 +109,12 @@ class HomeViewModel @Inject constructor(
 		notesRepo.watchNotes()
 	)
 
+	private val tagsCollector = TagsCollector(
+		viewModelScope,
+		tagsRepo.watchTags(),
+		profilesRepo.watchProfiles()
+	)
+
 	val mainScreenCoordinator = MainScreenCoordinator(
 		selfProfileSourceFlow = familiesDataCollector.selfContentFlow,
 		familiesSourceFlow = familiesDataCollector.familiesContentFlow,
@@ -100,6 +123,11 @@ class HomeViewModel @Inject constructor(
 	)
 
 	val barCoordinator = MainBarCoordinator(
+		tagsCoordinator = ReadOnlyMultiSelectDropdownCoordinatorGeneric<FullTag>(
+			optionTextMutator = { it.tagText },
+			optionBackgroundColor = { Color(it.tagColor.toColorInt()) /*Color.fromHex(it.tagColor)*/ },
+			optionIdForSelectedCheck = { it.id }
+		),
 		onLogout = {
 			logout()
 		}

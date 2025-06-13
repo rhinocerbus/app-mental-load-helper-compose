@@ -55,5 +55,25 @@ val AppSchema: Schema = Schema(
 				Column.text("family_id")
 			)
 		),
+		Table(
+			name = "tags",
+			columns = listOf(
+				// added by powersync
+				//Column.text("id"),
+				Column.text("created_at"),
+				Column.text("profile_id"),
+				Column.text("label"),
+				Column.text("color")
+			)
+		),
+		Table(
+			name = "tags_to_family",
+			columns = listOf(
+				// added by powersync
+				//Column.text("id"),
+				Column.text("family_id"),
+				Column.text("tag_id"),
+			)
+		),
 	)
 )

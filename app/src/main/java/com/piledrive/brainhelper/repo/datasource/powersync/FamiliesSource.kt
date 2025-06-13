@@ -5,6 +5,8 @@ import com.piledrive.brainhelper.data.model.Profile
 import com.piledrive.lib_supabase_powersync.powersync.PowerSyncDbWrapper
 import com.powersync.db.getString
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,6 +34,9 @@ class FamiliesSource @Inject constructor(
 					name = cursor.getString("name"),
 				)
 			}
-		)
+		).map {
+			Timber.d("Families received: $it")
+			it
+		}
 	}
 }
