@@ -1,7 +1,6 @@
 package com.piledrive.brainhelper.viewmodel.collectors
 
-import com.piledrive.brainhelper.data.model.Family
-import com.piledrive.brainhelper.data.state.FamilyContentState
+import com.piledrive.brainhelper.data.model.Scratch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -11,19 +10,19 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class FamiliesCollector(
+class ScratchCollector(
 	coroutineScope: CoroutineScope,
-	familiesSourceFlow: Flow<List<Family>>,
+	scratchSourceFlow: Flow<List<Scratch>>,
 	activeFamilyIdPrefSourceFlow: Flow<String?>
 ) {
 
 	init {
 		coroutineScope.launch(Dispatchers.Default) {
-			val familiesSource = watchFamilies(familiesSourceFlow)
+			val scratchSource = watchScratch(scratchSourceFlow)
 			val activeFamilySource = watchFamily(activeFamilyIdPrefSourceFlow)
-
-			merge(familiesSource, activeFamilySource)
+			merge(scratchSource, activeFamilySource)
 				.debounce(500)
 				.collect {
 					recompileData()
@@ -34,10 +33,11 @@ class FamiliesCollector(
 	//  region Raw data model inputs
 	/////////////////////////////////////////////////
 
-	private var familiesContent: List<Family> = listOf()
-	private fun watchFamilies(source: Flow<List<Family>>): Flow<Unit> {
+	private var scratchContent: List<Scratch> = listOf()
+
+	private fun watchScratch(source: Flow<List<Scratch>>): Flow<Unit> {
 		return source.mapLatest {
-			familiesContent = it
+			scratchContent = it
 		}
 	}
 
@@ -48,6 +48,7 @@ class FamiliesCollector(
 		}
 	}
 
+
 	/////////////////////////////////////////////////
 	//  endregion
 
@@ -55,12 +56,13 @@ class FamiliesCollector(
 	//  region Composite data outputs
 	/////////////////////////////////////////////////
 
-	private val _familyContentFlow = MutableStateFlow(FamilyContentState())
-	val familyContentFlow: StateFlow<FamilyContentState> = _familyContentFlow
+	private val _scratchContentFlow: MutableStateFlow<Scratch?> = MutableStateFlow(null)
+	val scratchContentFlow: StateFlow<Scratch?> = _scratchContentFlow
 
+	// todo - resolve this with powersync queries, relations
+	// todo - add optional state for current tag to filter by to keep optimization in mainviewmodel
 	private suspend fun recompileData() {
-		val activeFamily = familiesContent.firstOrNull { it.id == activeFamilyId}
-		_familyContentFlow.value = FamilyContentState(familiesContent, activeFamily)
+		_scratchContentFlow.value = scratchContent.firstOrNull { it.familyId == activeFamilyId }
 	}
 
 	/////////////////////////////////////////////////
