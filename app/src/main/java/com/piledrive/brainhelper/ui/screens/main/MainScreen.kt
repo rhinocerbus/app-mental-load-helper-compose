@@ -19,6 +19,9 @@ import com.piledrive.brainhelper.data.model.Family
 import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.data.model.Profile
 import com.piledrive.brainhelper.ui.nav.NavRoute
+import com.piledrive.brainhelper.ui.screens.main.views.MainBar
+import com.piledrive.brainhelper.ui.screens.main.views.MainBarCoordinator
+import com.piledrive.brainhelper.ui.screens.main.views.stubMainBarCoordinator
 import com.piledrive.lib_compose_components.ui.spacer.Gap
 import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
 import kotlinx.coroutines.flow.StateFlow
@@ -28,19 +31,26 @@ object MainScreen : NavRoute {
 
 	@Composable
 	fun draw(
+		barCoordinator: MainBarCoordinator,
 		mainCoordinator: MainScreenCoordinator,
 	) {
 		drawContent(
+			barCoordinator,
 			mainCoordinator,
 		)
 	}
 
 	@Composable
 	fun drawContent(
+		barCoordinator: MainBarCoordinator,
 		mainCoordinator: MainScreenCoordinator,
 	) {
 		Scaffold(
 			topBar = {
+				MainBar(
+					Modifier,
+					barCoordinator
+				)
 			},
 			content = { innerPadding ->
 				BodyContent(modifier = Modifier.padding(innerPadding), mainCoordinator)
@@ -135,6 +145,7 @@ object MainScreen : NavRoute {
 fun MainPreview() {
 	AppTheme {
 		MainScreen.drawContent(
+			stubMainBarCoordinator,
 			stubMainScreenCoordinator
 		)
 	}

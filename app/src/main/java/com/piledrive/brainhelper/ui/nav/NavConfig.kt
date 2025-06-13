@@ -53,13 +53,17 @@ fun RootNavHost() {
 		composable(route = SplashScreen.routeValue) {
 			val viewModel: SplashViewModel = hiltViewModel<SplashViewModel>()
 			LaunchedEffect("cached auth status") {
-				viewModel.events.consumeEach {
+				viewModel.authorizedEvent.consumeEach {
 					val toRoute = if (it) {
 						MainScreen.routeValue
 					} else {
 						AuthScreen.routeValue
 					}
-					navController.navigate(toRoute)
+					navController.navigate(toRoute){
+						popUpTo(navController.graph.id) {
+							inclusive = true
+						}
+					}
 				}
 			}
 			SplashScreen.draw(
@@ -70,10 +74,15 @@ fun RootNavHost() {
 		composable(route = AuthScreen.routeValue) {
 			val viewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
 			LaunchedEffect("auth status") {
-				viewModel.coordinator.events.consumeEach {
+				viewModel.coordinator.loginSuccessEvent.consumeEach {
 					if (it) {
 						val toRoute = MainScreen.routeValue
-						navController.navigate(toRoute)
+						navController.popBackStack()
+						navController.navigate(toRoute) {
+							popUpTo(navController.graph.id) {
+								inclusive = true
+							}
+						}
 					} else {
 						//?
 					}
@@ -86,10 +95,23 @@ fun RootNavHost() {
 
 		composable(route = MainScreen.routeValue) {
 			val viewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
-			LaunchedEffect("load_content_on_launch") {
-				viewModel.reloadContent()
+			LaunchedEffect("watch_logout") {
+				viewModel.loggedOutEvent.consumeEach {
+					if (it) {
+						val toRoute = AuthScreen.routeValue
+						navController.popBackStack()
+						navController.navigate(toRoute) {
+							popUpTo(navController.graph.id) {
+								inclusive = true
+							}
+						}
+					} else {
+						//?
+					}
+				}
 			}
 			MainScreen.draw(
+				viewModel.barCoordinator,
 				viewModel.mainScreenCoordinator,
 			)
 		}

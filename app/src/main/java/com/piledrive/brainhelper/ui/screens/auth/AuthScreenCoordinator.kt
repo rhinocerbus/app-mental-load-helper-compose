@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 interface AuthScreenCoordinatorImpl : BaseCoordinator {
-	val events: ReceiveChannel<Boolean>
+	val loginSuccessEvent: ReceiveChannel<Boolean>
 	val networkBusyStateFlow: StateFlow<Boolean>
 	val registerToggleStateFlow: StateFlow<Boolean>
 	val errorStateFlow: StateFlow<String?>
@@ -28,7 +28,7 @@ class AuthScreenCoordinator(
 	}
 
 	val _events: Channel<Boolean> = Channel()
-	override val events: ReceiveChannel<Boolean> = _events
+	override val loginSuccessEvent: ReceiveChannel<Boolean> = _events
 
 	val _networkBusyStateFlow = MutableStateFlow<Boolean>(initialIsBusy)
 	override val networkBusyStateFlow: StateFlow<Boolean> = _networkBusyStateFlow
