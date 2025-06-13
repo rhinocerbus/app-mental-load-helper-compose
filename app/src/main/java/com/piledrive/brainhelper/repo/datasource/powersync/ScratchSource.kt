@@ -1,7 +1,9 @@
 package com.piledrive.brainhelper.repo.datasource.powersync
 
+import android.content.ContentValues
 import com.piledrive.brainhelper.data.model.Scratch
-import com.piledrive.lib_supabase_powersync.data.model.abstracts.datasource.abstracts.BasicPowerSyncDataSource
+import com.piledrive.brainhelper.data.model.ScratchSlug
+import com.piledrive.lib_supabase_powersync.data.model.abstracts.datasource.abstracts.CrudPowerSyncDataSource
 import com.piledrive.lib_supabase_powersync.powersync.PowerSyncDbWrapper
 import com.powersync.db.getString
 import com.powersync.db.getStringOptional
@@ -15,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class ScratchSource @Inject constructor(
 	private val powerSync: PowerSyncDbWrapper,
-) : BasicPowerSyncDataSource<Scratch> {
+) : CrudPowerSyncDataSource<Scratch, ScratchSlug> {
 
 	override val initStateFlow: StateFlow<Int> = powerSync.initState
 
@@ -33,5 +35,20 @@ class ScratchSource @Inject constructor(
 			Timber.d("Scratch received: $it")
 			it
 		}
+	}
+
+	override suspend fun addNewData(slug: ScratchSlug) {
+		val values = ContentValues().apply {
+			put("family_id", slug.familyId)
+			put("content", slug.content)
+		}
+		powerSync.insert("scratch", values, Scratch::class)
+	}
+
+	override suspend fun updateData(data: Scratch) {
+		val values = ContentValues().apply {
+			put("content", data.content)
+		}
+		powerSync.update("scratch", values, whereValue = data.id, clazz = Scratch::class)
 	}
 }

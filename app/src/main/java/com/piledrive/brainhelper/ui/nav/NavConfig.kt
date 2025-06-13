@@ -118,7 +118,7 @@ fun RootNavHost() {
 				viewModel.mainScreenCoordinator,
 				object : MainScreen.MainScreenNavCallbacks {
 					override val onLaunchScratchPad: () -> Unit = {
-						navController.navigate("") {
+						navController.navigate(TopLevelRoutes.SCRATCH.routeValue) {
 						}
 					}
 				}
@@ -127,7 +127,7 @@ fun RootNavHost() {
 
 		composable(TopLevelRoutes.SCRATCH.routeValue) {
 			val viewModel: ScratchPadViewModel = hiltViewModel<ScratchPadViewModel>()
-			ScratchPadScreen.draw(viewModel)
+			ScratchPadScreen.draw(viewModel.coordinator)
 		}
 		/*
 		composable(route = PodcastScreen.routeValue) { navStackEntry ->
