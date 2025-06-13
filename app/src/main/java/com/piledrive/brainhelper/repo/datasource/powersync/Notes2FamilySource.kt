@@ -2,8 +2,10 @@ package com.piledrive.brainhelper.repo.datasource.powersync
 
 import android.content.ContentValues
 import com.piledrive.brainhelper.data.model.Note
-import com.piledrive.brainhelper.data.model.NoteSlug
+import com.piledrive.brainhelper.data.model.Note2Family
+import com.piledrive.brainhelper.data.model.Note2FamilySlug
 import com.piledrive.brainhelper.data.model.Scratch
+import com.piledrive.lib_supabase_powersync.data.model.abstracts.datasource.abstracts.BasicPowerSyncDataSource
 import com.piledrive.lib_supabase_powersync.data.model.abstracts.datasource.abstracts.CrudPowerSyncDataSource
 import com.piledrive.lib_supabase_powersync.powersync.PowerSyncDbWrapper
 import com.powersync.db.getString
@@ -16,43 +18,36 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NotesSource @Inject constructor(
+class Notes2FamilySource @Inject constructor(
 	private val powerSync: PowerSyncDbWrapper,
-) : CrudPowerSyncDataSource<Note, NoteSlug> {
+) : CrudPowerSyncDataSource<Note2Family, Note2FamilySlug> {
 
 	override val initStateFlow: StateFlow<Int> = powerSync.initState
 
-	override fun watchContent(): Flow<List<Note>> {
+	override fun watchContent(): Flow<List<Note2Family>> {
 		return powerSync.db.watch(
-			"SELECT * FROM notes", mapper = { cursor ->
-				Note(
+			"SELECT * FROM notes_to_family", mapper = { cursor ->
+				Note2Family(
 					id = cursor.getString("id"),
-					createdAt = cursor.getString("created_at"),
-					title = cursor.getStringOptional("title"),
-					content = cursor.getString("content"),
+					familyId = cursor.getString("family_id"),
+					noteId = cursor.getString("note_id"),
 				)
 			}
 		).map {
-			Timber.d("Notes received: $it")
+			Timber.d("Notes2Family received: $it")
 			it
 		}
 	}
 
-	override suspend fun addNewData(slug: NoteSlug) {
+	override suspend fun addNewData(slug: Note2FamilySlug) {
 		val values = ContentValues().apply {
-			put("title", slug.title)
-			put("content", slug.content)
+			put("family_id", slug.familyId)
+			put("note_id", slug.noteId)
 		}
-		powerSync.insert("scratch", values, Note::class)
+		powerSync.insert("notes_to_family", values, Note2Family::class)
 	}
 
-	override suspend fun updateData(data: Note) {
-		val values = ContentValues().apply {
-			// updated_at handled by remote db extension trigger
-			put("title", data.title)
-			put("content", data.content)
-		}
-		powerSync.update("notes", values, whereValue = data.id, clazz = Note::class)
-	}
+	override suspend fun updateData(data: Note2Family) {
+		TODO("Not yet implemented")
 	}
 }

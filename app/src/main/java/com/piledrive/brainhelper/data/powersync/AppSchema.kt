@@ -42,6 +42,7 @@ val AppSchema: Schema = Schema(
 				//Column.text("id"),
 				Column.text("created_at"),
 				Column.text("updated_at"),
+				Column.text("title"),
 				Column.text("content"),
 				Column.text("family_id")
 			)

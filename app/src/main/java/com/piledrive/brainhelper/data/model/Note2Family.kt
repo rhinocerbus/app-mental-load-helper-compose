@@ -6,22 +6,23 @@ import com.piledrive.lib_supabase_powersync.data.model.abstracts.supabase.SupaBa
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-interface ScratchImpl {
+interface Note2FamilyImpl {
 	val familyId: String
-	val content: String?
+	val noteId: String
 }
 
-data class ScratchSlug(
+data class Note2FamilySlug(
 	override val familyId: String,
-	override val content: String?
-) : ScratchImpl, SlugDataModel
+	override val noteId: String
+): Note2FamilyImpl, SlugDataModel
 
 @JsonClass(generateAdapter = true)
-data class Scratch(
+data class Note2Family(
 	override val id: String = "",
-	@Json(name = "created_at")
-	override val createdAt: String = "",
 	@Json(name = "family_id")
 	override val familyId: String = "",
-	override val content: String? = null,
-) : ScratchImpl, SupaBaseModel, FullDataModel
+	@Json(name = "note_id")
+	override val noteId: String
+) : Note2FamilyImpl, SupaBaseModel, FullDataModel {
+	override val createdAt: String = ""
+}
