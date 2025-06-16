@@ -6,6 +6,11 @@ import com.piledrive.lib_supabase_powersync.data.model.abstracts.supabase.SupaBa
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+
+/**
+ * todo
+ * - add "last updated by" column, db extension
+ */
 interface NoteImpl {
 	val updatedAt: String
 	val title: String?
