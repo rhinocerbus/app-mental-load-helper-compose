@@ -140,7 +140,13 @@ class HomeViewModel @Inject constructor(
 	val barCoordinator = MainBarCoordinator(
 		tagsCoordinator = ReadOnlyMultiSelectDropdownCoordinatorGeneric<FullTag>(
 			optionTextMutator = { it.tagText },
-			optionBackgroundColor = { Color(it.tagColor.toColorInt()) /*Color.fromHex(it.tagColor)*/ },
+			optionBackgroundColor = {
+				if (it.tagColor != null) {
+					Color(it.tagColor.toColorInt())
+				} else {
+					Color.Transparent
+				}
+			},
 			optionIdForSelectedCheck = { it.id }
 		),
 		onLogout = {

@@ -6,13 +6,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -20,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.piledrive.brainhelper.R
-import com.piledrive.brainhelper.data.model.Family
 import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.data.model.Profile
 import com.piledrive.brainhelper.data.state.FamilyContentState
@@ -38,6 +45,7 @@ object MainScreen : NavRoute {
 
 	interface MainScreenNavCallbacks {
 		val onLaunchScratchPad: () -> Unit
+		val onLaunchNote: (Note?) -> Unit
 	}
 
 	@Composable
@@ -57,11 +65,7 @@ object MainScreen : NavRoute {
 				BodyContent(modifier = Modifier.padding(innerPadding), mainCoordinator)
 			},
 			floatingActionButton = {
-				FloatingActionButton(
-					onClick = { navCallbacks.onLaunchScratchPad() }
-				) {
-					Icon(ImageVector.vectorResource(R.drawable.baseline_edit_note_24), "show scratch pad")
-				}
+				FabsSection(navCallbacks)
 			}
 		)
 	}
@@ -146,6 +150,37 @@ object MainScreen : NavRoute {
 			}
 		}
 	}
+
+	@Composable
+	private fun FabsSection(navCallbacks: MainScreenNavCallbacks) {
+		var showMenu by remember { mutableStateOf(false) }
+		Column {
+			FloatingActionButton(
+				onClick = { showMenu = true }
+			) {
+				Icon(Icons.Default.Add, "add content")
+			}
+			DropdownMenu(
+				expanded = showMenu,
+				onDismissRequest = { showMenu = false }
+			) {
+				DropdownMenuItem(
+					text = { Text("Add note") }, onClick = {
+						navCallbacks.onLaunchNote(null)
+						showMenu = false
+					}
+				)
+			}
+
+			Gap(16)
+
+			FloatingActionButton(
+				onClick = { navCallbacks.onLaunchScratchPad() }
+			) {
+				Icon(ImageVector.vectorResource(R.drawable.baseline_edit_note_24), "show scratch pad")
+			}
+		}
+	}
 }
 
 @Preview
@@ -157,6 +192,7 @@ private fun MainPreview() {
 			stubMainScreenCoordinator,
 			object : MainScreen.MainScreenNavCallbacks {
 				override val onLaunchScratchPad: () -> Unit = {}
+				override val onLaunchNote: (Note?) -> Unit = {}
 			}
 		)
 	}

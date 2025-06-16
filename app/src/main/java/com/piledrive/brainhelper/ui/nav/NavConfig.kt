@@ -8,15 +8,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.ui.screens.SplashScreen
 import com.piledrive.brainhelper.ui.screens.auth.AuthScreen
 import com.piledrive.brainhelper.ui.screens.main.MainScreen
 import com.piledrive.brainhelper.ui.screens.scratch.ScratchPadScreen
 import com.piledrive.brainhelper.viewmodel.AuthViewModel
 import com.piledrive.brainhelper.viewmodel.HomeViewModel
+import com.piledrive.brainhelper.viewmodel.NoteDetailsViewModel
 import com.piledrive.brainhelper.viewmodel.ScratchPadViewModel
 import com.piledrive.brainhelper.viewmodel.SplashViewModel
 import kotlinx.coroutines.channels.consumeEach
+import java.security.InvalidParameterException
 
 interface NavRoute {
 	val routeValue: String
@@ -29,7 +32,7 @@ enum class TopLevelRoutes(override val routeValue: String) : NavRoute {
 enum class NavArgKeys(val key: String) { GUID("guid") }
 
 enum class ChildRoutes(override val routeValue: String) : NavRoute {
-	CONTENT_DETAILS("content/{${NavArgKeys.GUID.key}}"),
+	NOTE_DETAILS("note/{${NavArgKeys.GUID.key}}"),
 }
 
 @Composable
@@ -121,6 +124,10 @@ fun RootNavHost() {
 						navController.navigate(TopLevelRoutes.SCRATCH.routeValue) {
 						}
 					}
+					override val onLaunchNote: (Note?) -> Unit = { note ->
+						val toRoute = ChildRoutes.NOTE_DETAILS.routeValue.replace("{${NavArgKeys.GUID.key}}", note?.id ?: "_")
+						navController.navigate(toRoute)
+					}
 				}
 			)
 		}
@@ -129,18 +136,12 @@ fun RootNavHost() {
 			val viewModel: ScratchPadViewModel = hiltViewModel<ScratchPadViewModel>()
 			ScratchPadScreen.draw(viewModel.coordinator)
 		}
-		/*
-		composable(route = PodcastScreen.routeValue) { navStackEntry ->
+
+		composable(route = ChildRoutes.NOTE_DETAILS.routeValue) { navStackEntry ->
 			val podcastGuid = navStackEntry.arguments?.getString(NavArgKeys.GUID.key)
-				?: throw InvalidParameterException("no podcast guid provided for nav")
-			val podcastViewModel: PodcastViewModel = hiltViewModel<PodcastViewModel>()
-			//val vmOwner = LocalViewModelStoreOwner.current ?: return@composable
-			//val altPodcastViewModel: PodcastViewModel = hiltViewModel<PodcastViewModel>(vmOwner)
-			val playerViewModel = hiltViewModel<PlayerViewModel>()
-			LaunchedEffect("load_podcast_on_nav") {
-				podcastViewModel.loadPodcast(podcastGuid)
-			}
-			PodcastScreen.draw(
+				?: throw InvalidParameterException("no note id provided for nav")
+			val viewmodel: NoteDetailsViewModel = hiltViewModel<NoteDetailsViewModel>()
+			/*PodcastScreen.draw(
 				podcastViewModel,
 				playerViewModel,
 				podcastGuid,
@@ -149,9 +150,8 @@ fun RootNavHost() {
 					val toRoute = PodcastSettingsScreen.routeValue.replace("{${NavArgKeys.GUID.key}}", podcast.guid)
 					navController.navigate(toRoute)
 				}
-			)
+			)*/
 		}
-		 */
 	}
 }
 
