@@ -11,12 +11,13 @@ import timber.log.Timber
 abstract class BaseViewModel() : ViewModel() {
 
 	protected abstract val initStateFlow: StateFlow<Int>
-
+	//protected abstract fun initStateFlow(): StateFlow<Int>
+/*
 	init {
 		initDataSync()
-	}
+	}*/
 
-	private fun initDataSync() {
+	protected fun initDataSync() {
 		viewModelScope.launch {
 			withContext(Dispatchers.Default) {
 				initStateFlow.collect {

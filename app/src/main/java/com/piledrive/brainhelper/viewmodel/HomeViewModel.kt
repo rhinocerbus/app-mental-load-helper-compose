@@ -40,6 +40,10 @@ class HomeViewModel @Inject constructor(
 
 	override val initStateFlow: StateFlow<Int> = profilesRepo.initStateFlow
 
+	init {
+		initDataSync()
+	}
+
 	override fun initWatches() {
 		viewModelScope.launch(Dispatchers.Default) {
 			profilesRepo.watchSelfProfile().collect {
