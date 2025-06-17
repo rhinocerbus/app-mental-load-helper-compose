@@ -12,6 +12,7 @@ import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.ui.screens.SplashScreen
 import com.piledrive.brainhelper.ui.screens.auth.AuthScreen
 import com.piledrive.brainhelper.ui.screens.main.MainScreen
+import com.piledrive.brainhelper.ui.screens.note_details.NoteDetailsScreen
 import com.piledrive.brainhelper.ui.screens.scratch.ScratchPadScreen
 import com.piledrive.brainhelper.viewmodel.AuthViewModel
 import com.piledrive.brainhelper.viewmodel.HomeViewModel
@@ -125,7 +126,7 @@ fun RootNavHost() {
 						}
 					}
 					override val onLaunchNote: (Note?) -> Unit = { note ->
-						val toRoute = ChildRoutes.NOTE_DETAILS.routeValue.replace("{${NavArgKeys.GUID.key}}", note?.id ?: "_")
+						val toRoute = ChildRoutes.NOTE_DETAILS.routeValue.replace("{${NavArgKeys.GUID.key}}", note?.id ?: "")
 						navController.navigate(toRoute)
 					}
 				}
@@ -138,19 +139,17 @@ fun RootNavHost() {
 		}
 
 		composable(route = ChildRoutes.NOTE_DETAILS.routeValue) { navStackEntry ->
-			val podcastGuid = navStackEntry.arguments?.getString(NavArgKeys.GUID.key)
-				?: throw InvalidParameterException("no note id provided for nav")
-			val viewmodel: NoteDetailsViewModel = hiltViewModel<NoteDetailsViewModel>()
-			/*PodcastScreen.draw(
-				podcastViewModel,
-				playerViewModel,
-				podcastGuid,
-				onBack = { navController.navigateUp() },
-				onOpenPodcastSettings = { podcast ->
-					val toRoute = PodcastSettingsScreen.routeValue.replace("{${NavArgKeys.GUID.key}}", podcast.guid)
-					navController.navigate(toRoute)
-				}
-			)*/
+			val noteId = navStackEntry.arguments?.getString(NavArgKeys.GUID.key)
+			val viewmodel: NoteDetailsViewModel = hiltViewModel<NoteDetailsViewModel>().apply { updateActiveNoteId(noteId) }
+			val navCallbacks = object : NoteDetailsScreen.NavCallbacks {
+				override val onLaunchCreateTag: () -> Unit = {}
+				override val onBack: () -> Unit = {}
+			}
+
+			NoteDetailsScreen.draw(
+				viewmodel.coordinator,
+				navCallbacks
+			)
 		}
 	}
 }
