@@ -9,7 +9,6 @@ import com.piledrive.lib_supabase_powersync.data.model.abstracts.powersync.SlugD
 import com.piledrive.lib_supabase_powersync.data.model.abstracts.supabase.SupaBaseModel
 
 data class FullNoteSlug(
-	override val updatedAt: String,
 	override val title: String?,
 	override val content: String,
 	val tagIds: List<String>

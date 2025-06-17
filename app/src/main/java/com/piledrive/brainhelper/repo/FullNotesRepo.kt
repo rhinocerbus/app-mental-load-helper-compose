@@ -3,12 +3,14 @@ package com.piledrive.brainhelper.repo
 import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.data.model.Note2Family
 import com.piledrive.brainhelper.data.model.NoteSlug
+import com.piledrive.brainhelper.data.model.Tags2Notes
 import com.piledrive.brainhelper.data.model.composite.FullNote
 import com.piledrive.brainhelper.data.model.composite.FullNoteSlug
 import com.piledrive.brainhelper.data.model.composite.FullTag
 import com.piledrive.brainhelper.datastore.SessionDataStore
 import com.piledrive.brainhelper.repo.abstracts.BaseRemoteRepo
 import com.piledrive.brainhelper.repo.datasource.powersync.ProfilesSource
+import com.piledrive.brainhelper.repo.datasource.powersync.Tags2NotesSource
 import com.piledrive.lib_supabase_powersync.data.model.abstracts.datasource.abstracts.CompositeDataSource
 import com.piledrive.lib_supabase_powersync.data.model.abstracts.datasource.abstracts.CrudPowerSyncDataSource
 import dagger.hilt.android.scopes.ViewModelScoped
@@ -30,6 +32,7 @@ class FullNotesRepo @Inject constructor(
 	private val notes2FamilyRepo: Notes2FamilyRepo,
 	private val notesRepo: NotesRepo,
 	private val fullTagsRepo: FullTagsRepo,
+	private val tags2Notes: Tags2NotesSource,
 	private val profilesSource: ProfilesSource,
 ) : BaseRemoteRepo(scope), CrudPowerSyncDataSource<FullNote, FullNoteSlug>, CompositeDataSource<FullNote> {
 
@@ -39,7 +42,7 @@ class FullNotesRepo @Inject constructor(
 	override val outputContentFlow: StateFlow<List<FullNote>> = _outputContentFlow
 
 	override suspend fun addNewData(slug: FullNoteSlug) {
-		notesRepo.addNewData(NoteSlug(updatedAt = slug.updatedAt, title = slug.title, content = slug.content))
+		notesRepo.addNewData(NoteSlug(title = slug.title, content = slug.content))
 	}
 
 	override suspend fun updateData(data: FullNote) {
@@ -74,8 +77,9 @@ class FullNotesRepo @Inject constructor(
 				notes2FamilyRepo.watchContent(),
 				notesRepo.watchContent(),
 				fullTagsRepo.watchContent(),
-			) { famId, notes2Fam, notes, fullTags ->
-				compileData(famId, notes2Fam, notes, fullTags)
+				tags2Notes.watchContent(),
+			) { famId, notes2Fam, notes, fullTags, tags2Notes ->
+				compileData(famId, notes2Fam, notes, fullTags, tags2Notes)
 			}
 				.mapLatest { it }
 				// see delay notes in compileData
@@ -88,14 +92,14 @@ class FullNotesRepo @Inject constructor(
 
 	// based on merge, need to pick one :(
 	override suspend fun recompileData() {
-
 	}
 
 	private suspend fun compileData(
 		famId: String?,
 		notes2Fam: List<Note2Family>,
 		notes: List<Note>,
-		fullTags: List<FullTag>
+		fullTags: List<FullTag>,
+		tags2Notes: List<Tags2Notes>
 	): List<FullNote> {
 		// todo: not in love with the delay, either get over it and let the recompilations stack, make it cancellable, or use merge w/ caching
 		delay(500L)
@@ -104,8 +108,14 @@ class FullNotesRepo @Inject constructor(
 		}
 		val notesIdsForFam = notes2Fam.filter { it.familyId == safeFamId }.map { it.noteId }
 		val notesForFam = notes.filter { notesIdsForFam.contains(it.id) }
-		val fullNotes = notesForFam.map {
-			FullNote(it, tags = fullTags)
+
+		val tagsForNotes = tags2Notes.filter { notesIdsForFam.contains(it.noteId) }
+		val tags2NotesGrouped = tagsForNotes.groupBy { it.noteId }
+
+		val fullNotes = notesForFam.map { note ->
+			val tagIdsForNote = tags2NotesGrouped[note.id]?.map { it.tagId } ?: listOf()
+			val tagsForNote = fullTags.filter { tag -> tagIdsForNote.contains(tag.id) }
+			FullNote(note = note, tags = tagsForNote)
 		}
 		return fullNotes
 	}

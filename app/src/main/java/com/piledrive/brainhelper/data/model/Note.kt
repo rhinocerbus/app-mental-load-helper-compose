@@ -12,13 +12,11 @@ import com.squareup.moshi.JsonClass
  * - add "last updated by" column, db extension
  */
 interface NoteImpl {
-	val updatedAt: String
 	val title: String?
 	val content: String
 }
 
 data class NoteSlug(
-	override val updatedAt: String,
 	override val title: String?,
 	override val content: String
 ): NoteImpl, SlugDataModel
@@ -28,7 +26,7 @@ data class Note(
 	override val id: String = "",
 	@Json(name = "created_at")
 	override val createdAt: String = "",
-	override val updatedAt: String = "",
+	val updatedAt: String = "",
 	override val content: String = "",
 	override val title: String?
 ) : NoteImpl, SupaBaseModel, FullDataModel
