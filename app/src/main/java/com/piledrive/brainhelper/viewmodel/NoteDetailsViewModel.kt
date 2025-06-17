@@ -1,19 +1,16 @@
 package com.piledrive.brainhelper.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.piledrive.brainhelper.data.model.ScratchSlug
+import com.piledrive.brainhelper.data.model.composite.FullNoteSlug
 import com.piledrive.brainhelper.datastore.SessionDataStore
 import com.piledrive.brainhelper.repo.AuthRepo
-import com.piledrive.brainhelper.repo.FamiliesRepo
+import com.piledrive.brainhelper.repo.FullNotesRepo
 import com.piledrive.brainhelper.repo.FullTagsRepo
-import com.piledrive.brainhelper.repo.NotesRepo
-import com.piledrive.brainhelper.repo.ProfilesRepo
-import com.piledrive.brainhelper.repo.ScratchRepo
-import com.piledrive.brainhelper.ui.screens.scratch.ScratchPadScreenCoordinator
+import com.piledrive.brainhelper.ui.screens.note_details.NoteDetailsScreenCoordinator
 import com.piledrive.brainhelper.viewmodel.abstracts.AuthenticatedViewModel
-import com.piledrive.brainhelper.viewmodel.abstracts.BaseViewModel
-import com.piledrive.brainhelper.viewmodel.collectors.ScratchCollector
+import com.piledrive.brainhelper.viewmodel.collectors.NoteDetailsCollector
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
@@ -25,61 +22,60 @@ import javax.inject.Inject
 @HiltViewModel
 class NoteDetailsViewModel @Inject constructor(
 	private val dataStore: SessionDataStore,
-	private val profilesRepo: ProfilesRepo,
-	private val familiesRepo: FamiliesRepo,
-	private val notesRepo: NotesRepo,
 	private val authRepo: AuthRepo,
-	private val scratchRepo: ScratchRepo,
-	private val fullTagsRepo: FullTagsRepo,
+	private val notesRepo: FullNotesRepo,
+	private val tagsRepo: FullTagsRepo
 ) : AuthenticatedViewModel(authRepo) {
 
-	override val initStateFlow: StateFlow<Int> = profilesRepo.initStateFlow
+	override val initStateFlow: StateFlow<Int> = notesRepo.initStateFlow
+
+	init {
+		initDataSync()
+	}
 
 	override fun initWatches() {
+		viewModelScope.launch(Dispatchers.Default) {
+			notesRepo.watchContent().collect {
+
+			}
+		}
 		viewModelScope.launch {
 			textInput
 				.mapNotNull { it }
 				.distinctUntilChanged { old, new -> old == new }
 				.debounce(500L)
 				.collect {
-					if (scratchCollector.scratchContentFlow.value != null) {
-						scratchRepo.watchContent()
-					}
+					//if (scratchCollector.scratchContentFlow.value != null) {
+					//}
 				}
-
 		}
 	}
 
-	private val scratchCollector = ScratchCollector(
-		viewModelScope,
-		scratchRepo.watchContent(),
-		dataStore.watchActiveFamilyId()
-	)
+	private val activeNoteIdStateFlow: MutableStateFlow<String?> = MutableStateFlow(null)
+	fun updateActiveNoteId(id: String?) {
+		activeNoteIdStateFlow.value = id
+	}
 
-	val coordinator = ScratchPadScreenCoordinator(
-		scratchCollector.scratchContentFlow,
-		// could do some debounced save, would need to add a saved status icon or something
-		onTextChanged = { updatedText ->
-			viewModelScope.launch {
-				writeScratchNotes(updatedText)
-			}
+	val collector = NoteDetailsCollector(viewModelScope, notesRepo.outputContentFlow, activeNoteIdStateFlow)
+
+	val coordinator = NoteDetailsScreenCoordinator(
+		collector.noteDetailsContentFlow,
+		tagsRepo.outputContentFlow,
+		onSaveNoteState = { title: String?, content: String, tagIds: List<String> ->
+			viewModelScope.launch { writeChanges(title, content, tagIds) }
 		}
 	)
 
-	private suspend fun writeScratchNotes(updatedText: String) {
-		val activeScratch = coordinator.scratchesSourceFlow.value
-		val activeFamily = dataStore.checkActiveFamilyId() ?: return
-
-		if (activeScratch == null) {
-			scratchRepo.addNewData(ScratchSlug(familyId = activeFamily, content = updatedText))
+	private suspend fun writeChanges(title: String?, content: String, tagIds: List<String>) {
+		val activeNote = coordinator.activeNoteSourceFlow.value
+		if (activeNote == null) {
+			notesRepo.addNewData(FullNoteSlug(title, content, tagIds))
 		} else {
-			scratchRepo.updateData(activeScratch.copy(content = updatedText))
+			val updatedNote = activeNote.note.copy(title = title, content = content)
+			val updatedTags = tagsRepo.outputContentFlow.value.filter { tagIds.contains(it.id) }
+			notesRepo.updateData(activeNote.copy(note = updatedNote, tags = updatedTags))
 		}
 	}
 
 	private val textInput: MutableStateFlow<String?> = MutableStateFlow(null)
-
-
-	suspend fun reloadContent() {
-	}
 }
