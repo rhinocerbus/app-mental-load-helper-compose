@@ -14,6 +14,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -62,7 +63,7 @@ object MainScreen : NavRoute {
 				)
 			},
 			content = { innerPadding ->
-				BodyContent(modifier = Modifier.padding(innerPadding), mainCoordinator)
+				BodyContent(modifier = Modifier.padding(innerPadding), mainCoordinator, navCallbacks)
 			},
 			floatingActionButton = {
 				FabsSection(navCallbacks)
@@ -74,6 +75,7 @@ object MainScreen : NavRoute {
 	private fun BodyContent(
 		modifier: Modifier = Modifier,
 		mainCoordinator: MainScreenCoordinator,
+		navCallbacks: MainScreenNavCallbacks,
 	) {
 		Column(modifier = modifier) {
 			SelfSection(mainCoordinator.selfProfileSourceFlow)
@@ -82,7 +84,7 @@ object MainScreen : NavRoute {
 			Gap(20)
 			FamilyMembersSection(mainCoordinator.familyMembersSourceFlow)
 			Gap(20)
-			NotesSection(mainCoordinator.notesSourceFlow)
+			NotesSection(mainCoordinator.notesSourceFlow, navCallbacks)
 		}
 	}
 
@@ -135,7 +137,7 @@ object MainScreen : NavRoute {
 	}
 
 	@Composable
-	private fun NotesSection(notesSourceFlow: StateFlow<List<Note>>) {
+	private fun NotesSection(notesSourceFlow: StateFlow<List<Note>>, navCallbacks: MainScreenNavCallbacks) {
 		val notes = notesSourceFlow.collectAsState().value
 		Text(text = "Family notes:")
 		LazyColumn(
@@ -146,7 +148,9 @@ object MainScreen : NavRoute {
 				items = notes,
 				key = { _, note -> note.id }
 			) { _, note ->
-				Text(text = note.content)
+				Surface(onClick = { navCallbacks.onLaunchNote(note) }) {
+					Text(text = note.content)
+				}
 			}
 		}
 	}

@@ -20,7 +20,6 @@ import com.piledrive.brainhelper.viewmodel.NoteDetailsViewModel
 import com.piledrive.brainhelper.viewmodel.ScratchPadViewModel
 import com.piledrive.brainhelper.viewmodel.SplashViewModel
 import kotlinx.coroutines.channels.consumeEach
-import java.security.InvalidParameterException
 
 interface NavRoute {
 	val routeValue: String
@@ -143,7 +142,7 @@ fun RootNavHost() {
 			val viewmodel: NoteDetailsViewModel = hiltViewModel<NoteDetailsViewModel>().apply { updateActiveNoteId(noteId) }
 			val navCallbacks = object : NoteDetailsScreen.NavCallbacks {
 				override val onLaunchCreateTag: () -> Unit = {}
-				override val onBack: () -> Unit = {}
+				override val onBack: () -> Unit = { navController.popBackStack() }
 			}
 
 			NoteDetailsScreen.draw(
