@@ -31,9 +31,14 @@ class FullTagsRepo @Inject constructor(
 ) : BaseRemoteRepo(scope), BasicPowerSyncDataSource<FullTag>, CompositeDataSource<FullTag> {
 
 	override val initStateFlow: StateFlow<Int> = source.initStateFlow
+	override fun initStateFlow(): StateFlow<Int> = source.initStateFlow
 
 	private var tagsContent: List<Tag> = listOf()
 	private var profilesContent: List<Profile> = listOf()
+
+	init {
+		initWatch()
+	}
 
 	override suspend fun setupSources() {
 		scope.launch(Dispatchers.Default) {

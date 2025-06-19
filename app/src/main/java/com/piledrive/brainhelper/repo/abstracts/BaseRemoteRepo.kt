@@ -3,22 +3,22 @@ package com.piledrive.brainhelper.repo.abstracts
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 
 abstract class BaseRemoteRepo(
-	scope: CoroutineScope
+	private val scope: CoroutineScope
 ) {
 
-	abstract val initStateFlow: StateFlow<Int>
+	abstract fun initStateFlow(): StateFlow<Int>
 
-	init {
+	protected fun initWatch() {
 		scope.launch(Dispatchers.Default) {
-			initStateFlow.mapLatest {
+			initStateFlow().collect {
 				if (it == 1) {
 					setupSources()
 				}
-				return@mapLatest it
 			}
 		}
 	}
