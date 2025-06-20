@@ -61,19 +61,28 @@ class NoteDetailsViewModel @Inject constructor(
 	val coordinator = NoteDetailsScreenCoordinator(
 		collector.noteDetailsContentFlow,
 		tagsRepo.outputContentFlow,
-		onSaveNoteState = { title: String?, content: String, tagIds: List<String> ->
-			viewModelScope.launch { writeChanges(title, content, tagIds) }
+		onSaveNoteState = { fromLifecycle: Boolean, title: String?, content: String, tagIds: List<String> ->
+			viewModelScope.launch { writeChanges(fromLifecycle, title, content, tagIds) }
 		}
 	)
 
-	private suspend fun writeChanges(title: String?, content: String, tagIds: List<String>) {
+	private suspend fun writeChanges(fromLifecycle: Boolean, title: String?, content: String, tagIds: List<String>) {
 		val activeNote = coordinator.activeNoteSourceFlow.value
-		if (activeNote == null) {
-			notesRepo.addNewData(FullNoteSlug(title, content, tagIds))
-		} else {
+		if (activeNote != null) {
 			val updatedNote = activeNote.note.copy(title = title, content = content)
 			val updatedTags = tagsRepo.outputContentFlow.value.filter { tagIds.contains(it.id) }
-			notesRepo.updateData(activeNote.copy(note = updatedNote, tags = updatedTags))
+			val updatedFullNote = activeNote.copy(note = updatedNote, tags = updatedTags)
+			if (updatedFullNote == activeNote) return
+			notesRepo.updateData(updatedFullNote)
+			return
+		}
+
+		if (fromLifecycle) {
+			if (title.isNullOrBlank() && content.isBlank()) return
+			notesRepo.addNewData(FullNoteSlug(title, content, tagIds))
+		} else {
+			// either this, or catch id from first update and set as active note id, this is easier atm
+			return
 		}
 	}
 

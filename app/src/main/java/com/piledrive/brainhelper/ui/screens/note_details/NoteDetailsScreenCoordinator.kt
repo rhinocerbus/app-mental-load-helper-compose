@@ -9,17 +9,17 @@ import kotlinx.coroutines.flow.StateFlow
 interface NoteDetailsScreenCoordinatorImpl {
 	val activeNoteSourceFlow: StateFlow<FullNote?>
 	val allTagsSourceFlow: StateFlow<List<FullTag>>
-	val onSaveNoteState: (title: String?, content: String, tagIds: List<String>) -> Unit
+	val onSaveNoteState: (fromLifecycle: Boolean, title: String?, content: String, tagIds: List<String>) -> Unit
 }
 
 class NoteDetailsScreenCoordinator(
 	override val activeNoteSourceFlow: StateFlow<FullNote?>,
 	override val allTagsSourceFlow: StateFlow<List<FullTag>>,
-	override val onSaveNoteState: (title: String?, content: String, tagIds: List<String>) -> Unit
+	override val onSaveNoteState: (fromLifecycle: Boolean, title: String?, content: String, tagIds: List<String>) -> Unit
 ) : NoteDetailsScreenCoordinatorImpl
 
 val stubNoteDetailsScreenCoordinator = NoteDetailsScreenCoordinator(
 	activeNoteSourceFlow = MutableStateFlow(null),
 	allTagsSourceFlow = MutableStateFlow(listOf()),
-	onSaveNoteState = { _, _, _ -> }
+	onSaveNoteState = { _, _, _, _ -> }
 )
