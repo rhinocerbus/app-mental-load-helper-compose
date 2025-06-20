@@ -52,6 +52,7 @@ val AppSchema: Schema = Schema(
 			columns = listOf(
 				// added by powersync
 				//Column.text("id"),
+				Column.text("created_at"),
 				Column.text("note_id"),
 				Column.text("family_id")
 			)

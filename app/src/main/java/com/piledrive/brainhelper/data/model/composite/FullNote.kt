@@ -1,18 +1,20 @@
 package com.piledrive.brainhelper.data.model.composite
 
 import com.piledrive.brainhelper.data.model.Note
-import com.piledrive.brainhelper.data.model.NoteImpl
-import com.piledrive.brainhelper.data.model.Profile
-import com.piledrive.brainhelper.data.model.Tag
 import com.piledrive.lib_supabase_powersync.data.model.abstracts.powersync.FullDataModel
 import com.piledrive.lib_supabase_powersync.data.model.abstracts.powersync.SlugDataModel
 import com.piledrive.lib_supabase_powersync.data.model.abstracts.supabase.SupaBaseModel
+
+interface FullNoteImpl {
+	val title: String?
+	val content: String
+}
 
 data class FullNoteSlug(
 	override val title: String?,
 	override val content: String,
 	val tagIds: List<String>
-): NoteImpl, SlugDataModel
+) : FullNoteImpl, SlugDataModel
 
 data class FullNote(
 	val note: Note,

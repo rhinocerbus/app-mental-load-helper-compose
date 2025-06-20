@@ -40,10 +40,11 @@ class NotesSource @Inject constructor(
 
 	override suspend fun addNewData(slug: NoteSlug) {
 		val values = ContentValues().apply {
+			put("id", slug.id)
 			put("title", slug.title)
 			put("content", slug.content)
 		}
-		powerSync.insert("scratch", values, Note::class)
+		powerSync.insert("notes", values, Note::class)
 	}
 
 	override suspend fun updateData(data: Note) {
