@@ -103,7 +103,7 @@ object NoteDetailsScreen : NavRoute {
 
 		val allTags = notesCoordinator.allTagsSourceFlow.collectAsState().value
 
-		LaunchedEffect(noteContent?.id) {
+		LaunchedEffect(noteContent?.toString()) {
 			noteTitleText.value = noteContent?.noteTitle ?: ""
 			noteContentText.value = noteContent?.noteCotnent ?: ""
 			selectedTags.value = noteContent?.tags ?: listOf()
