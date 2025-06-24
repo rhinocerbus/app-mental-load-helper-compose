@@ -7,14 +7,14 @@ import com.piledrive.brainhelper.data.model.composite.FullTag
 import com.piledrive.brainhelper.datastore.SessionDataStore
 import com.piledrive.brainhelper.repo.AuthRepo
 import com.piledrive.brainhelper.repo.FamiliesRepo
-import com.piledrive.brainhelper.repo.NotesRepo
+import com.piledrive.brainhelper.repo.FullNotesRepo
 import com.piledrive.brainhelper.repo.ProfilesRepo
 import com.piledrive.brainhelper.repo.TagsRepo
 import com.piledrive.brainhelper.ui.screens.main.MainScreenCoordinator
 import com.piledrive.brainhelper.ui.screens.main.views.MainBarCoordinator
 import com.piledrive.brainhelper.viewmodel.abstracts.AuthenticatedViewModel
 import com.piledrive.brainhelper.viewmodel.collectors.FamiliesCollector
-import com.piledrive.brainhelper.viewmodel.collectors.NotesCollector
+import com.piledrive.brainhelper.viewmodel.collectors.FullNotesCollector
 import com.piledrive.brainhelper.viewmodel.collectors.ProfilesCollector
 import com.piledrive.brainhelper.viewmodel.collectors.TagsCollector
 import com.piledrive.lib_compose_components.ui.dropdown.readonly.multiselect.ReadOnlyMultiSelectDropdownCoordinatorGeneric
@@ -33,7 +33,7 @@ class HomeViewModel @Inject constructor(
 	private val dataStore: SessionDataStore,
 	private val profilesRepo: ProfilesRepo,
 	private val familiesRepo: FamiliesRepo,
-	private val notesRepo: NotesRepo,
+	private val notesRepo: FullNotesRepo,
 	private val authRepo: AuthRepo,
 	private val tagsRepo: TagsRepo
 ) : AuthenticatedViewModel(authRepo) {
@@ -79,7 +79,7 @@ class HomeViewModel @Inject constructor(
 		profilesRepo.watchContent()
 	)
 
-	private val notesCollector = NotesCollector(
+	private val notesCollector = FullNotesCollector(
 		viewModelScope,
 		notesRepo.watchContent()
 	)
@@ -94,7 +94,7 @@ class HomeViewModel @Inject constructor(
 		selfProfileSourceFlow = profilesDataCollector.selfContentFlow,
 		familiesSourceFlow = familiesDataCollector.familyContentFlow,
 		familyMembersSourceFlow = profilesDataCollector.profilesContentFlow,
-		notesSourceFlow = notesCollector.notesContentFlow,
+		notesSourceFlow = notesCollector.fullNotesContentFlow,
 	)
 
 	val barCoordinator = MainBarCoordinator(

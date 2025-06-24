@@ -14,7 +14,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,11 +30,13 @@ import androidx.compose.ui.zIndex
 import com.piledrive.brainhelper.R
 import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.data.model.Profile
+import com.piledrive.brainhelper.data.model.composite.FullNote
 import com.piledrive.brainhelper.data.state.FamilyContentState
 import com.piledrive.brainhelper.ui.nav.NavRoute
 import com.piledrive.brainhelper.ui.nav.TopLevelRoutes
 import com.piledrive.brainhelper.ui.screens.main.views.MainBar
 import com.piledrive.brainhelper.ui.screens.main.views.MainBarCoordinator
+import com.piledrive.brainhelper.ui.screens.main.views.NoteCard
 import com.piledrive.brainhelper.ui.screens.main.views.stubMainBarCoordinator
 import com.piledrive.lib_compose_components.ui.spacer.Gap
 import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
@@ -137,7 +138,7 @@ object MainScreen : NavRoute {
 	}
 
 	@Composable
-	private fun NotesSection(notesSourceFlow: StateFlow<List<Note>>, navCallbacks: MainScreenNavCallbacks) {
+	private fun NotesSection(notesSourceFlow: StateFlow<List<FullNote>>, navCallbacks: MainScreenNavCallbacks) {
 		val notes = notesSourceFlow.collectAsState().value
 		Text(text = "Family notes:")
 		LazyColumn(
@@ -147,10 +148,16 @@ object MainScreen : NavRoute {
 			itemsIndexed(
 				items = notes,
 				key = { _, note -> note.id }
-			) { _, note ->
-				Surface(onClick = { navCallbacks.onLaunchNote(note) }) {
-					Text(text = note.content)
+			) { idx, note ->
+				if (idx != 0) {
+					Gap(8)
 				}
+
+				NoteCard(
+					modifier = Modifier.fillMaxWidth(),
+					note = note.note,
+					tags = note.tags,
+					onClick = { navCallbacks.onLaunchNote(note.note) })
 			}
 		}
 	}

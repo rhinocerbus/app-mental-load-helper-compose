@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.SuggestionChipDefaults.suggestionChipBorder
@@ -19,6 +20,7 @@ import androidx.core.graphics.toColorInt
 import com.piledrive.brainhelper.data.model.Note
 import com.piledrive.brainhelper.data.model.composite.FullTag
 import com.piledrive.brainhelper.data.state.SampleData
+import com.piledrive.lib_compose_components.ui.chips.ChipGroup
 import com.piledrive.lib_compose_components.ui.spacer.Gap
 import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
 
@@ -26,44 +28,52 @@ import com.piledrive.lib_compose_components.ui.theme.custom.AppTheme
 fun NoteCard(
 	modifier: Modifier,
 	note: Note,
-	tags: List<FullTag>
+	tags: List<FullTag>,
+	onClick: () -> Unit
 ) {
 	Box(modifier = modifier.fillMaxWidth()) {
 		Surface(
 			modifier = modifier.fillMaxWidth(),
-			shape = RoundedCornerShape(12.dp)/*, color = MaterialTheme.colorScheme.surfaceVariant*/
+			shape = RoundedCornerShape(12.dp),
+			color = MaterialTheme.colorScheme.secondaryContainer,
+			onClick = onClick
 		) {
-			Column(modifier = modifier
-				.fillMaxWidth()
-				.padding(8.dp)) {
+			Column(
+				modifier = modifier
+					.fillMaxWidth()
+					.padding(8.dp)
+			) {
 				Text(modifier = modifier.fillMaxWidth(), text = note.title ?: "No title")
 
 				if (tags.isNotEmpty()) {
 					Gap(8)
 
-					tags.forEach {
-						val tagColor = it.tagColor
-						SuggestionChip(
-							onClick = {
-								// todo - launch edit tag?
-								//coordinator.launchAddTag()
-							},
-							label = { Text(it.tagText) },
-							border = if (tagColor != null) {
-								//SuggestionChipDefaults.suggestionChipBorder(true).copy(brush = SolidColor(Color(tagColor.toColorInt())))
-								suggestionChipBorder(enabled = true, borderColor = Color(tagColor.toColorInt()))
-							} else {
-								suggestionChipBorder(enabled = true)
-							},
-							colors = if (tagColor != null) {
-								SuggestionChipDefaults.suggestionChipColors().copy(labelColor = Color(tagColor.toColorInt()))
-							} else {
-								SuggestionChipDefaults.suggestionChipColors()
-							},
-							icon = {
-								// todo - profile color?
-							}
-						)
+					ChipGroup {
+
+						tags.forEach {
+							val tagColor = it.tagColor
+							SuggestionChip(
+								onClick = {
+									// todo - launch edit tag?
+									//coordinator.launchAddTag()
+								},
+								label = { Text(it.tagText) },
+								border = if (tagColor != null) {
+									//SuggestionChipDefaults.suggestionChipBorder(true).copy(brush = SolidColor(Color(tagColor.toColorInt())))
+									suggestionChipBorder(enabled = true, borderColor = Color(tagColor.toColorInt()))
+								} else {
+									suggestionChipBorder(enabled = true)
+								},
+								colors = if (tagColor != null) {
+									SuggestionChipDefaults.suggestionChipColors().copy(labelColor = Color(tagColor.toColorInt()))
+								} else {
+									SuggestionChipDefaults.suggestionChipColors()
+								},
+								icon = {
+									// todo - profile color?
+								}
+							)
+						}
 					}
 				}
 
@@ -85,7 +95,8 @@ private fun NoteCardPreview() {
 				title = "Note Title",
 				content = "asdfgasdgsdagsdah dofihgodf hopi hjdfaio hpjadsfpojh adspofpadsofjhpdaojhpaeorjh aerh- ae-r4h jear-hjae-rh09jea-r09he0o rjladfkj hpaeojrh padoljfhpadoj fh"
 			),
-			tags = SampleData.sampleFullTags
+			tags = SampleData.sampleFullTags,
+			onClick = {}
 		)
 	}
 }
