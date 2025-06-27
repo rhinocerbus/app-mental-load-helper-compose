@@ -9,11 +9,13 @@ import com.squareup.moshi.JsonClass
 interface Tags2NotesImpl {
 	val noteId: String
 	val tagId: String
+	val _enabled: Int
 }
 
 data class Tags2NotesSlug(
 	override val noteId: String,
 	override val tagId: String,
+	override val _enabled: Int,
 ) : Tags2NotesImpl, SlugDataModel
 
 @JsonClass(generateAdapter = true)
@@ -23,6 +25,9 @@ data class Tags2Notes(
 	override val noteId: String,
 	@Json(name = "tag_id")
 	override val tagId: String = "",
+	@Json(name = "enabled")
+	override val _enabled: Int = 0,
 ) : Tags2NotesImpl, SupaBaseModel, FullDataModel {
 	override val createdAt: String = ""
+	val enabled: Boolean = _enabled == 1
 }

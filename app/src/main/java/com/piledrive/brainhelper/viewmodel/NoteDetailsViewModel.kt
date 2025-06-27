@@ -73,7 +73,7 @@ class NoteDetailsViewModel @Inject constructor(
 			val updatedTags = tagsRepo.outputContentFlow.value.filter { tagIds.contains(it.id) }
 			val updatedFullNote = activeNote.copy(note = updatedNote, tags = updatedTags)
 			if (updatedFullNote == activeNote) return
-			notesRepo.updateData(updatedFullNote)
+			notesRepo.upsertData(updatedFullNote, activeNote)
 			return
 		}
 

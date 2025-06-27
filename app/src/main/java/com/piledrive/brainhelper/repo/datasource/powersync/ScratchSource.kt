@@ -43,7 +43,7 @@ class ScratchSource @Inject constructor(
 			put("family_id", slug.familyId)
 			put("content", slug.content)
 		}
-		powerSync.insert("scratch", values, Scratch::class)
+		powerSync.insert("scratch", values, clazz = Scratch::class)
 	}
 
 	override suspend fun updateData(data: Scratch) {

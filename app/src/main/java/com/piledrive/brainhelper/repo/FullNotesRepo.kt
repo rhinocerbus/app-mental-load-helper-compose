@@ -5,6 +5,7 @@ import com.piledrive.brainhelper.data.model.Note2Family
 import com.piledrive.brainhelper.data.model.Note2FamilySlug
 import com.piledrive.brainhelper.data.model.NoteSlug
 import com.piledrive.brainhelper.data.model.Tags2Notes
+import com.piledrive.brainhelper.data.model.Tags2NotesSlug
 import com.piledrive.brainhelper.data.model.composite.FullNote
 import com.piledrive.brainhelper.data.model.composite.FullNoteSlug
 import com.piledrive.brainhelper.data.model.composite.FullTag
@@ -71,7 +72,38 @@ class FullNotesRepo @Inject constructor(
 	}
 
 	override suspend fun updateData(data: FullNote) {
-		notesRepo.updateData(data.note)
+		/*
+			update:
+			tags2notes first
+			then note
+			no need to update note2family
+		 */
+
+		runBlocking {
+			tags2Notes.upsertTagsForNote(data.id, newData = data.tags.map { Tags2Notes(noteId = data.id, tagId = it.id, _enabled = 1) })
+		}
+
+
+		runBlocking {
+			notesRepo.updateData(data.note)
+		}
+	}
+
+	suspend fun upsertData(updatedData: FullNote, oldData: FullNote?) {
+		/*
+			update:
+			tags2notes first
+			then note
+			no need to update note2family
+		 */
+		val noteId = updatedData.id
+
+		if (updatedData.tags != oldData?.tags) {
+			tags2Notes.upsertTagsForNote(
+				noteId = noteId,
+				newData = updatedData.tags.map { Tags2NotesSlug(noteId = noteId, tagId = it.id, _enabled = 1) }
+			)
+		}
 	}
 
 	override suspend fun deleteData(data: FullNote) {
@@ -138,7 +170,7 @@ class FullNotesRepo @Inject constructor(
 		val notesForFam = notes.filter { notesIdsForFam.contains(it.id) }
 		Timber.d(">> notes for family: $notesForFam")
 
-		val tagsForNotes = tags2Notes.filter { notesIdsForFam.contains(it.noteId) }
+		val tagsForNotes = tags2Notes.filter { it.enabled && notesIdsForFam.contains(it.noteId) }
 		val tags2NotesGrouped = tagsForNotes.groupBy { it.noteId }
 
 		val fullNotes = notesForFam.map { note ->

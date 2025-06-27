@@ -44,7 +44,7 @@ class NotesSource @Inject constructor(
 			put("title", slug.title)
 			put("content", slug.content)
 		}
-		powerSync.insert("notes", values, Note::class)
+		powerSync.insert("notes", values, clazz = Note::class)
 	}
 
 	override suspend fun updateData(data: Note) {

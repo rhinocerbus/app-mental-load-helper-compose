@@ -40,7 +40,7 @@ class Notes2FamilySource @Inject constructor(
 			put("family_id", slug.familyId)
 			put("note_id", slug.noteId)
 		}
-		powerSync.insert("notes_to_family", values, Note2Family::class)
+		powerSync.insert("notes_to_family", values, clazz = Note2Family::class)
 	}
 
 	@Deprecated(level = DeprecationLevel.ERROR, message = "Update unsupported for table")
