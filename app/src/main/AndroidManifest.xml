@@ -15,6 +15,8 @@
 		android:roundIcon="@mipmap/ic_launcher_round"
 		android:supportsRtl="true"
 		android:theme="@style/Theme.MoviesSampleCompose"
+		android:hardwareAccelerated="true"
+		android:largeHeap="false"
 		tools:targetApi="34">
 
 		<activity
