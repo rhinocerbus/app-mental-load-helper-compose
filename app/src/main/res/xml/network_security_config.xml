@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+	<domain-config cleartextTrafficPermitted="false">
+		<domain includeSubdomains="true">supabase.co</domain>
+		<domain includeSubdomains="true">your-custom-domain.com</domain>
+	</domain-config>
+
+	<!-- Allow cleartext traffic only for debug builds -->
+	<base-config cleartextTrafficPermitted="false">
+		<trust-anchors>
+			<!-- Trust preinstalled CAs -->
+			<certificates src="system" />
+		</trust-anchors>
+	</base-config>
+</network-security-config>
