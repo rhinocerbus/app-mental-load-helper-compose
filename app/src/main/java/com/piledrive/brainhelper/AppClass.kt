@@ -10,12 +10,17 @@ class AppClass : Application() {
 	override fun onCreate() {
 		super.onCreate()
 
+		initLogging()
+		// TODO: Consider using androidx.startup for heavy initialization
+	}
+
+	private fun initLogging() {
 		if (isDebug()) {
 			Timber.plant(Timber.DebugTree())
 		}
 	}
-}
 
-fun Application.isDebug(): Boolean {
-	return applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
+	private fun isDebug(): Boolean {
+		return applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
+	}
 }
